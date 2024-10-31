@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { FaUser, FaHome, FaUsers, FaBriefcase, FaBell, FaEnvelope } from 'react-icons/fa';
+import { FaUser, FaHome, FaUsers, FaBriefcase, FaBell, FaEnvelope, FaSearch } from 'react-icons/fa';
 
 const NavBar = () => {
   return (
@@ -10,6 +10,16 @@ const NavBar = () => {
         <Link to="/" className="text-2xl font-bold text-blue-600">
           Avengers-Assemble
         </Link>
+        
+        {/* Search Bar */}
+        <div className="flex-grow mx-4 relative">
+          <input
+            type="text"
+            placeholder="Search"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+          />
+          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+        </div>
         
         {/* Links */}
         <div className="hidden md:flex space-x-6">
@@ -56,11 +66,6 @@ const NavBar = () => {
           </NavLink>
         </div>
         
-        {/* Post Button
-        <button className="hidden md:inline-block px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600">
-          Post
-        </button> */}
-
         {/* Mobile Menu Toggle */}
         <div className="md:hidden">
           {/* Toggle button code (for a mobile menu) */}
