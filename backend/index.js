@@ -4,6 +4,7 @@ import "dotenv/config";
 import connectdb from "./config/mongodb.js";
 import connectCloudinary from "./config/cloudinary.js";
 import userRouter from "./routes/userRoute.js";
+import jobRouter from "./routes/jobRoute.js";
 
 // App config
 const app = express();
@@ -15,8 +16,8 @@ connectCloudinary();
 app.use(express.json());
 app.use(cors());
 
-
-app.use("/api/user", userRouter)
+app.use("/api/user", userRouter);
+app.use("/api/job", jobRouter);
 
 app.get("/", (req, res) => {
   res.send("Backend Running.");

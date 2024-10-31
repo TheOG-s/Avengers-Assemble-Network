@@ -4,29 +4,26 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 const loginUser = async (req, res) => {
-//   res.json({ msg: "login API Working" });
+  //   res.json({ msg: "login API Working" });
 
-    try {
-        const {email, password} = req.body
-        
-        const user = await userModel.findOne({email});
+  try {
+    const { email, password } = req.body;
 
-        if(!user) {
-            return res.json({ success: false, message: "User doesnot exist." });
-        }
+    const user = await userModel.findOne({ email });
 
-        const isMatch = await bcrypt.compare(password, user.password);
-
-        if(!isMatch) {
-            return res.json({ success: false, message: "Incorrect Password" });
-        }
-
-        const token = createToken(user._id);
-        res.json({ success: true, token });
-
-    } catch (error) {
-        
+    if (!user) {
+      return res.json({ success: false, message: "User doesnot exist." });
     }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.json({ success: false, message: "Incorrect Password" });
+    }
+
+    const token = createToken(user._id);
+    res.json({ success: true, token });
+  } catch (error) {}
 };
 
 const createToken = (id) => {
