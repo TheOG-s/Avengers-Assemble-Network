@@ -13,9 +13,9 @@ const NavBar = () => {
         
         {/* Logo and Brand Name */}
         <div className="flex items-center space-x-2">
-          <img src={logo} alt="Logo" className="w-12 h-12" />
+          <img src={logo} alt="Logo" className="w-15 h-12" />
           <Link to="/" className="text-2xl font-bold text-blue-600">
-            Avengers-Assemble
+           
           </Link>
         </div>
         
