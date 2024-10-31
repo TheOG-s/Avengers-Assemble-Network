@@ -40,9 +40,9 @@ const NavBar = () => {
           <NavLink to="/jobs" className={({ isActive }) => isActive ? "text-blue-600 font-medium" : "text-gray-600 hover:text-blue-500"}>
             <FaBriefcase className="inline mr-1" /> Jobs
           </NavLink>
-          <NavLink to="/messages" className={({ isActive }) => isActive ? "text-blue-600 font-medium" : "text-gray-600 hover:text-blue-500"}>
+          {/* <NavLink to="/messages" className={({ isActive }) => isActive ? "text-blue-600 font-medium" : "text-gray-600 hover:text-blue-500"}>
             <FaEnvelope className="inline mr-1" /> Messages
-          </NavLink>
+          </NavLink> */}
           <NavLink to="/notifications" className={({ isActive }) => isActive ? "text-blue-600 font-medium" : "text-gray-600 hover:text-blue-500"}>
             <FaBell className="inline mr-1" /> Notifications
           </NavLink>

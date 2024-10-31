@@ -5,8 +5,7 @@ import { useNavigate } from 'react-router-dom';
 const Signup = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    fullName: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -48,8 +47,7 @@ const Signup = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.firstName) newErrors.firstName = "First Name is required";
-    if (!formData.lastName) newErrors.lastName = "Last Name is required";
+    if (!formData.fullName) newErrors.fullName = "Full Name is required";
     if (!formData.email) newErrors.email = "Email is required";
     
     const passwordError = validatePassword(formData.password);
@@ -83,32 +81,18 @@ const Signup = () => {
         <h2 className="text-2xl font-bold text-center text-gray-800">Create an Account</h2>
         
         <form className="space-y-4" onSubmit={handleSubmit}>
-          {/* First Name */}
+          {/* Full Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">First Name</label>
+            <label className="block text-sm font-medium text-gray-700">Full Name</label>
             <input
               type="text"
-              name="firstName"
-              value={formData.firstName}
+              name="fullName"
+              value={formData.fullName}
               onChange={handleChange}
-              className={`w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border ${errors.firstName ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
-              placeholder="Enter your first name"
+              className={`w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border ${errors.fullName ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              placeholder="Enter your full name"
             />
-            {errors.firstName && <p className="mt-1 text-sm text-red-500">{errors.firstName}</p>}
-          </div>
-
-          {/* Last Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Last Name</label>
-            <input
-              type="text"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border ${errors.lastName ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
-              placeholder="Enter your last name"
-            />
-            {errors.lastName && <p className="mt-1 text-sm text-red-500">{errors.lastName}</p>}
+            {errors.fullName && <p className="mt-1 text-sm text-red-500">{errors.fullName}</p>}
           </div>
 
           {/* Date of Birth */}

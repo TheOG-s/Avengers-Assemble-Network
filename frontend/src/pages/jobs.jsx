@@ -1,9 +1,10 @@
 import React from 'react'
+import JobCardGrid from '../components/jobcard'
 
 const Jobs = () => {
   return (
     <div>
-      <h1>Jobs</h1>
+      <JobCardGrid/>
     </div>
   )
 }
