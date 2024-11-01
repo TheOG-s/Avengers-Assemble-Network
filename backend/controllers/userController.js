@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 const createToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET_KEY);
+  return jwt.sign({ id }, process.env.JWT_SECRET_KEY, { expiresIn: "3d" });
 };
 
 const loginUser = async (req, res) => {
@@ -26,7 +26,12 @@ const loginUser = async (req, res) => {
     }
 
     const token = createToken(user._id);
-    res.json({ success: true, token });
+
+    res.cookie("token", token, {
+      maxAge: 3 * 24 * 60 * 60 * 1000,
+    });
+
+    res.json({ success: true, message: "Logged in successfully." });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
@@ -39,6 +44,10 @@ const signupUser = async (req, res) => {
   try {
     const { name, dob, email, password } = req.body;
     // console.log(req.body);
+
+    if (!name || !dob || !email || !password) {
+      return res.json({ success: false, message: "All fields are required." });
+    }
 
     const exists = await userModel.findOne({ email });
 
@@ -67,11 +76,29 @@ const signupUser = async (req, res) => {
 
     const token = createToken(user._id);
 
-    res.json({ success: true, token });
+    res.cookie("token", token, {
+      maxAge: 3 * 24 * 60 * 60 * 1000,
+    });
+
+    res.json({ success: true, message: "Account created successfully." });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
   }
 };
 
-export { loginUser, signupUser };
+const logoutUser = async (req, res) => {
+  res.clearCookie("token");
+  res.json({ success: true, message: "User logged out succesfully." });
+};
+
+const getCurrentUser = async (req, res) => {
+  try {
+    res.json(req.user);
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export { loginUser, signupUser, logoutUser, getCurrentUser };

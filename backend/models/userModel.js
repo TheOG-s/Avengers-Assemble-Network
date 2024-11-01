@@ -18,10 +18,56 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  profilePicture: {
+    type: String,
+    default: "",
+  },
+  coverPhoto: {
+    type: String,
+    default: "",
+  },
+  bio: {
+    type: String,
+    default: "",
+  },
+  skills: {
+    type: Array,
+  },
+  experience: [
+    {
+      title: String,
+      company: String,
+      startDate: Date,
+      endDate: Date,
+      description: String,
+    },
+  ],
+  project: [
+    {
+      title: String,
+      startDate: Date,
+      endDate: Date,
+      description: String,
+    },
+  ],
+  education: [
+    {
+      instituteName: String,
+      fieldOfStudy: String,
+      startYear: Number,
+      endYear: Number,
+    },
+  ],
   role: {
     type: String,
     required: true,
   },
+  connections: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+    },
+  ],
 });
 
 const userModel = mongoose.models.job || mongoose.model("user", userSchema);

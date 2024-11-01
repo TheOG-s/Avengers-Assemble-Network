@@ -6,6 +6,7 @@ import connectCloudinary from "./config/cloudinary.js";
 import userRouter from "./routes/userRoute.js";
 import jobRouter from "./routes/jobRoute.js";
 import companyRouter from "./routes/companyRoute.js";
+import cookieParser from "cookie-parser";
 
 // App config
 const app = express();
@@ -14,8 +15,9 @@ connectdb();
 connectCloudinary();
 
 // Middlewares
-app.use(express.json());
+app.use(express.json()); // Parse JSON request body
 app.use(cors());
+app.use(cookieParser());
 
 app.use("/api/user", userRouter);
 app.use("/api/job", jobRouter);
