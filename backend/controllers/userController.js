@@ -14,7 +14,7 @@ const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await userModel.findOne({ email });
-
+    console.log("user is" + user._id);
     if (!user) {
       return res.json({ success: false, message: "User does not exist." });
     }
@@ -42,8 +42,9 @@ const signupUser = async (req, res) => {
   //   res.json({ msg: "signup API Working" });
 
   try {
+    //console.log("hi vinay");
     const { name, dob, email, password } = req.body;
-    // console.log(req.body);
+    //console.log(req.body);
 
     if (!name || !dob || !email || !password) {
       return res.json({ success: false, message: "All fields are required." });
@@ -61,7 +62,7 @@ const signupUser = async (req, res) => {
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    // console.log(hashedPassword);
+    //console.log(hashedPassword);
 
     const newUser = new userModel({
       name,
@@ -70,7 +71,7 @@ const signupUser = async (req, res) => {
       password: hashedPassword,
       role: "user",
     });
-    // console.log("he he");
+    //console.log("he he");
 
     const user = await newUser.save();
 

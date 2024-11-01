@@ -2,9 +2,10 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 import connectdb from "./config/mongodb.js";
-import connectCloudinary from "./config/cloudinary.js";
+// import connectCloudinary from "./config/cloudinary.js";
 import userRouter from "./routes/userRoute.js";
 import jobRouter from "./routes/jobRoute.js";
+import postRouter from "./routes/postRoute.js";
 import companyRouter from "./routes/companyRoute.js";
 import cookieParser from "cookie-parser";
 
@@ -12,7 +13,7 @@ import cookieParser from "cookie-parser";
 const app = express();
 const port = process.env.PORT || 8000;
 connectdb();
-connectCloudinary();
+// connectCloudinary();
 
 // Middlewares
 app.use(express.json()); // Parse JSON request body
@@ -22,6 +23,7 @@ app.use(cookieParser());
 app.use("/api/user", userRouter);
 app.use("/api/job", jobRouter);
 app.use("/api/company", companyRouter);
+app.use("/api/posts", postRouter);
 
 app.get("/", (req, res) => {
   res.send("Backend Running.");
