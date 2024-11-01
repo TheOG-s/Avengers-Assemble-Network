@@ -1,4 +1,4 @@
-import userModel from "../models/userModel.js";
+import companyModel from "../models/companyModel.js";
 import validator from "validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -7,25 +7,23 @@ const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET_KEY);
 };
 
-const loginUser = async (req, res) => {
-  //   res.json({ msg: "login API Working" });
-
+const loginCompany = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await userModel.findOne({ email });
+    const company = await companyModel.findOne({ email });
 
-    if (!user) {
-      return res.json({ success: false, message: "User does not exist." });
+    if (!company) {
+      return res.json({ success: false, message: "Company does not exist." });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, company.password);
 
     if (!isMatch) {
       return res.json({ success: false, message: "Incorrect Password" });
     }
 
-    const token = createToken(user._id);
+    const token = createToken(company._id);
     res.json({ success: true, token });
   } catch (error) {
     console.log(error);
@@ -33,17 +31,16 @@ const loginUser = async (req, res) => {
   }
 };
 
-const signupUser = async (req, res) => {
-  //   res.json({ msg: "signup API Working" });
-
+const signupCompany = async (req, res) => {
   try {
-    const { name, dob, email, password } = req.body;
-    // console.log(req.body);
+    const { name, email, password } = req.body;
 
-    const exists = await userModel.findOne({ email });
+    const exists =
+      (await companyModel.findOne({ email })) ||
+      (await companyModel.findOne({ name }));
 
     if (exists) {
-      return res.json({ success: false, message: "User already exists." });
+      return res.json({ success: false, message: "Company already exists." });
     }
 
     if (!validator.isEmail(email)) {
@@ -52,20 +49,17 @@ const signupUser = async (req, res) => {
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    // console.log(hashedPassword);
 
-    const newUser = new userModel({
+    const newCompany = new companyModel({
       name,
-      dob,
       email,
       password: hashedPassword,
-      role: "user",
+      role: "company",
     });
-    // console.log("he he");
 
-    const user = await newUser.save();
+    const company = await newCompany.save();
 
-    const token = createToken(user._id);
+    const token = createToken(company._id);
 
     res.json({ success: true, token });
   } catch (error) {
@@ -74,4 +68,4 @@ const signupUser = async (req, res) => {
   }
 };
 
-export { loginUser, signupUser };
+export { loginCompany, signupCompany };
