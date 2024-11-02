@@ -43,17 +43,23 @@ const signupUser = async (req, res) => {
 
   try {
     //console.log("hi vinay");
-    const { name, dob, email, password } = req.body;
+    const { name, dob, email, username, password } = req.body;
     //console.log(req.body);
 
-    if (!name || !dob || !email || !password) {
+    if (!name || !dob || !email || !username || !password) {
       return res.json({ success: false, message: "All fields are required." });
     }
 
-    const exists = await userModel.findOne({ email });
+    const mailExists = await userModel.findOne({ email });
 
-    if (exists) {
-      return res.json({ success: false, message: "User already exists." });
+    if (mailExists) {
+      return res.json({ success: false, message: "User already exists with this email." });
+    }
+
+    const usernameExists = await userModel.findOne({ username });
+
+    if (usernameExists) {
+      return res.json({ success: false, message: "Username is taken." });
     }
 
     if (!validator.isEmail(email)) {
@@ -68,6 +74,7 @@ const signupUser = async (req, res) => {
       name,
       dob,
       email,
+      username,
       password: hashedPassword,
       role: "user",
     });
@@ -102,4 +109,7 @@ const getCurrentUser = async (req, res) => {
   }
 };
 
-export { loginUser, signupUser, logoutUser, getCurrentUser };
+const updateProfile = async (req, res) => {
+  res.json({ success: true, message: "Update profile route working" });
+};
+export { loginUser, signupUser, logoutUser, getCurrentUser, updateProfile };
