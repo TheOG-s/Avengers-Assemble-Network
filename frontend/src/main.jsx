@@ -18,13 +18,14 @@ createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <App />
     <Routes>
-      <Route path='/' element={<Home/>} />
+      <Route path='/' />
       <Route path='/signup'  element={<Signup/>} />
       <Route path='/login' element={<Login />} />
       <Route path='/Messages' element={<Messages />} />
       <Route path='/notifications' element={<Notifications />} />
       <Route path='/profile' element={<Profile />} />
       <Route path='/jobs' element={<Jobs />} />
+      <Route path='/home' element={<Home />} />
       
       <Route path='/connections' element={<Connections />} />
 
