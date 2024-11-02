@@ -14,7 +14,7 @@ const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await userModel.findOne({ email });
-
+    console.log("user is" + user._id);
     if (!user) {
       return res.json({ success: false, message: "User does not exist." });
     }
@@ -42,17 +42,24 @@ const signupUser = async (req, res) => {
   //   res.json({ msg: "signup API Working" });
 
   try {
-    const { name, dob, email, password } = req.body;
-    // console.log(req.body);
+    //console.log("hi vinay");
+    const { name, dob, email, username, password } = req.body;
+    //console.log(req.body);
 
-    if (!name || !dob || !email || !password) {
+    if (!name || !dob || !email || !username || !password) {
       return res.json({ success: false, message: "All fields are required." });
     }
 
-    const exists = await userModel.findOne({ email });
+    const mailExists = await userModel.findOne({ email });
 
-    if (exists) {
-      return res.json({ success: false, message: "User already exists." });
+    if (mailExists) {
+      return res.json({ success: false, message: "User already exists with this email." });
+    }
+
+    const usernameExists = await userModel.findOne({ username });
+
+    if (usernameExists) {
+      return res.json({ success: false, message: "Username is taken." });
     }
 
     if (!validator.isEmail(email)) {
@@ -61,16 +68,17 @@ const signupUser = async (req, res) => {
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    // console.log(hashedPassword);
+    //console.log(hashedPassword);
 
     const newUser = new userModel({
       name,
       dob,
       email,
+      username,
       password: hashedPassword,
       role: "user",
     });
-    // console.log("he he");
+    //console.log("he he");
 
     const user = await newUser.save();
 
@@ -101,4 +109,7 @@ const getCurrentUser = async (req, res) => {
   }
 };
 
-export { loginUser, signupUser, logoutUser, getCurrentUser };
+const updateProfile = async (req, res) => {
+  res.json({ success: true, message: "Update profile route working" });
+};
+export { loginUser, signupUser, logoutUser, getCurrentUser, updateProfile };
