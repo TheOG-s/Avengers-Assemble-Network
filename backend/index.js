@@ -8,6 +8,7 @@ import jobRouter from "./routes/jobRoute.js";
 import postRouter from "./routes/postRoute.js";
 import companyRouter from "./routes/companyRoute.js";
 import cookieParser from "cookie-parser";
+import exploreRouter from "./routes/exploreRoute.js";
 
 // App config
 const app = express();
@@ -21,6 +22,7 @@ app.use(cors());
 app.use(cookieParser());
 
 app.use("/api/user", userRouter);
+app.use("/api/explore", exploreRouter);
 app.use("/api/job", jobRouter);
 app.use("/api/company", companyRouter);
 app.use("/api/posts", postRouter);

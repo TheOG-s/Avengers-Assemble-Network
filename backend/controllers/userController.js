@@ -14,7 +14,7 @@ const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await userModel.findOne({ email });
-    console.log("user is" + user._id);
+    // console.log("user is " + user._id);
     if (!user) {
       return res.json({ success: false, message: "User does not exist." });
     }
