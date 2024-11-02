@@ -6,6 +6,7 @@ const Signup = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: '',
+    username: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -48,6 +49,7 @@ const Signup = () => {
     const newErrors = {};
 
     if (!formData.fullName) newErrors.fullName = "Full Name is required";
+    if (!formData.username) newErrors.username = "Username is required";
     if (!formData.email) newErrors.email = "Email is required";
     
     const passwordError = validatePassword(formData.password);
@@ -71,7 +73,7 @@ const Signup = () => {
     e.preventDefault();
     if (validateForm()) {
       console.log("Form submitted successfully", formData);
-      // Additional form submission logic here
+     
     }
   };
 
@@ -93,6 +95,20 @@ const Signup = () => {
               placeholder="Enter your full name"
             />
             {errors.fullName && <p className="mt-1 text-sm text-red-500">{errors.fullName}</p>}
+          </div>
+
+          {/* Username */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Username</label>
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              className={`w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border ${errors.username ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              placeholder="Enter a username"
+            />
+            {errors.username && <p className="mt-1 text-sm text-red-500">{errors.username}</p>}
           </div>
 
           {/* Date of Birth */}
