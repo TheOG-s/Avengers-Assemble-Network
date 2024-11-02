@@ -2,6 +2,7 @@ import userModel from "../models/userModel.js";
 import validator from "validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { uploadOnCloudinary } from "../config/cloudinary.js";
 
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET_KEY, { expiresIn: "3d" });
@@ -53,7 +54,10 @@ const signupUser = async (req, res) => {
     const mailExists = await userModel.findOne({ email });
 
     if (mailExists) {
-      return res.json({ success: false, message: "User already exists with this email." });
+      return res.json({
+        success: false,
+        message: "User already exists with this email.",
+      });
     }
 
     const usernameExists = await userModel.findOne({ username });
@@ -110,6 +114,53 @@ const getCurrentUser = async (req, res) => {
 };
 
 const updateProfile = async (req, res) => {
-  res.json({ success: true, message: "Update profile route working" });
+  try {
+    const updatableDetails = [
+      "name",
+      "profilePicture",
+      "coverPhoto",
+      "bio",
+      "skills",
+      "experience",
+      "project",
+      "education",
+    ];
+
+    const updatedDetails = {};
+
+    for (const detail of updatableDetails) {
+      if (req.body[detail]) {
+        updatedDetails[detail] = req.body[detail];
+      }
+    }
+
+
+    // Not tested this part.
+    // H-A-R-I-O-M check this with frontend
+    
+    // if (req.body.profilePicture) {
+    //   const uploadResult = await uploadOnCloudinary(req.body.profilePicture);
+    //   if (uploadResult) {
+    //     updatedDetails.profilePicture = uploadResult.secure_url;
+    //   }
+    // }
+
+    // if (req.body.coverPhoto) {
+    //   const uploadResult = await uploadOnCloudinary(req.body.coverPhoto);
+    //   if (uploadResult) {
+    //     updatedDetails.coverPhoto = uploadResult.secure_url;
+    //   }
+    // }
+
+    const user = await userModel
+      .findByIdAndUpdate(req.user._id, { $set: updatedDetails }, { new: true })
+      .select("-password");
+
+    res.json(user);
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
 };
+
 export { loginUser, signupUser, logoutUser, getCurrentUser, updateProfile };

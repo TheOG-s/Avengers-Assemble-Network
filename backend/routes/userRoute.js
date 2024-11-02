@@ -15,6 +15,6 @@ userRouter.post("/login", loginUser);
 userRouter.post("/logout", logoutUser);
 
 userRouter.get("/profile", protectUserRoute, getCurrentUser);
-userRouter.get("/updateprofile", protectUserRoute, updateProfile);
+userRouter.put("/updateprofile", protectUserRoute, updateProfile);
 
 export default userRouter;
