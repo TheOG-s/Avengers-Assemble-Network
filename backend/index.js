@@ -9,6 +9,7 @@ import postRouter from "./routes/postRoute.js";
 import companyRouter from "./routes/companyRoute.js";
 import cookieParser from "cookie-parser";
 import exploreRouter from "./routes/exploreRoute.js";
+import connectionRouter from "./routes/connectionRoute.js";
 
 // App config
 const app = express();
@@ -26,6 +27,7 @@ app.use("/api/explore", exploreRouter);
 app.use("/api/job", jobRouter);
 app.use("/api/company", companyRouter);
 app.use("/api/posts", postRouter);
+app.use("/api/connections", connectionRouter);
 
 app.get("/", (req, res) => {
   res.send("Backend Running.");
