@@ -19,7 +19,12 @@ connectdb();
 
 // Middlewares
 app.use(express.json()); // Parse JSON request body
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 
 app.use("/api/user", userRouter);

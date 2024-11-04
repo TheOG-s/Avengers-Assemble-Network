@@ -1,6 +1,7 @@
 // src/Login.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../../config/axios.js';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -25,11 +26,26 @@ const Login = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log("Login form submitted", formData);
-      // Add additional login logic here (e.g., API call)
+      const { email, password } = formData;
+      const userData = {
+        email,
+        password,
+      };
+
+      try {
+        const response = await axiosInstance.post('/user/login', userData);
+        if (response.data.success) {
+          console.log(response.data.message);
+          navigate('/profile');
+        } else {
+          setErrors({ general: response.data.message || "Login failed" });
+        }
+      } catch (error) {
+        setErrors({ general: "An error occurred. Please try again." });
+      }
     }
   };
 
