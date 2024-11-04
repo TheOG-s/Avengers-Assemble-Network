@@ -15,14 +15,17 @@ const protectUserRoute = async (req, res, next) => {
 
     // return res.json({decodedToken});
 
-    const user = await userModel
+    const response = await userModel
       .findById(decodedToken.id)
       .select("-password");
-    if (!user) {
+    if (!response) {
       return res.json({ message: "User not found." });
     }
 
-    req.user = user;
+    req.user = {
+      ...response.toObject(),
+      isOwner: true, // This will always be true since the profile matches the logged-in user
+    };
     next();
   } catch (error) {
     console.log(error);
