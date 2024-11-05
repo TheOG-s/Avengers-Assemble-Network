@@ -13,7 +13,7 @@ const Connections = () => {
 
       {/* Right Side: ConnectionCard */}
       <div className="w-full md:w-1/2 md:ml-4">
-        <ConnectionCard />
+        <ConnectionCard/>
       </div>
     </div>
   );

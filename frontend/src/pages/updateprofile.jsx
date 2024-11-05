@@ -1,20 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const UpdateProfilePage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: '',
-    bio: '',
-    profilePicture: '',
-    coverPhoto: '',
-    skills: '',
-    experience: [{ title: '', company: '', startDate: '', endDate: '', description: '' }],
-    projects: [{ title: '', startDate: '', endDate: '', description: '' }],
-    education: [{ instituteName: '', fieldOfStudy: '', startYear: '', endYear: '' }],
+    name: "",
+    bio: "",
+    profilePicture: "",
+    coverPhoto: "",
+    skills: "",
+    experience: [
+      { title: "", company: "", startDate: "", endDate: "", description: "" },
+    ],
+    projects: [{ title: "", startDate: "", endDate: "", description: "" }],
+    education: [
+      { instituteName: "", fieldOfStudy: "", startYear: "", endYear: "" },
+    ],
   });
 
-  // Simulate fetching user data
   useEffect(() => {
     const mockUserData = {
       name: "John Doe",
@@ -28,25 +31,26 @@ const UpdateProfilePage = () => {
           company: "Tech Corp",
           startDate: "Jan 2021",
           endDate: "Present",
-          description: "Developing and maintaining the front end of the main product."
-        }
+          description:
+            "Developing and maintaining the front end of the main product.",
+        },
       ],
       projects: [
         {
           title: "Portfolio Website",
           startDate: "Apr 2021",
           endDate: "May 2021",
-          description: "Personal website showcasing my projects and blogs."
-        }
+          description: "Personal website showcasing my projects and blogs.",
+        },
       ],
       education: [
         {
           instituteName: "ABC University",
           fieldOfStudy: "Computer Science",
           startYear: 2017,
-          endYear: 2021
-        }
-      ]
+          endYear: 2021,
+        },
+      ],
     };
 
     setFormData({
@@ -54,7 +58,7 @@ const UpdateProfilePage = () => {
       bio: mockUserData.bio,
       profilePicture: mockUserData.profilePicture,
       coverPhoto: mockUserData.coverPhoto,
-      skills: mockUserData.skills.join(', '),
+      skills: mockUserData.skills.join(", "),
       experience: mockUserData.experience,
       projects: mockUserData.projects,
       education: mockUserData.education,
@@ -69,49 +73,92 @@ const UpdateProfilePage = () => {
     }));
   };
 
-  const handleArrayChange = (e, section, index) => {
+  const handleFileChange = (e, field) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prevData) => ({
+          ...prevData,
+          [field]: reader.result,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleArrayChange = (e, arrayName, index) => {
     const { name, value } = e.target;
-    const updatedArray = formData[section].map((item, i) =>
-      i === index ? { ...item, [name]: value } : item
-    );
-    setFormData((prevData) => ({
-      ...prevData,
-      [section]: updatedArray,
-    }));
+    setFormData((prevData) => {
+      const updatedArray = [...prevData[arrayName]];
+      updatedArray[index] = {
+        ...updatedArray[index],
+        [name]: value,
+      };
+      return { ...prevData, [arrayName]: updatedArray };
+    });
   };
 
-  const addNewEntry = (section) => {
-    const newEntry = section === 'experience'
-      ? { title: '', company: '', startDate: '', endDate: '', description: '' }
-      : section === 'projects'
-      ? { title: '', startDate: '', endDate: '', description: '' }
-      : { instituteName: '', fieldOfStudy: '', startYear: '', endYear: '' };
-
-    setFormData((prevData) => ({
-      ...prevData,
-      [section]: [...prevData[section], newEntry],
-    }));
+  const removeEntry = (arrayName, index) => {
+    setFormData((prevData) => {
+      const updatedArray = prevData[arrayName].filter((_, i) => i !== index);
+      return { ...prevData, [arrayName]: updatedArray };
+    });
   };
 
-  const removeEntry = (section, index) => {
-    const updatedArray = formData[section].filter((_, i) => i !== index);
-    setFormData((prevData) => ({
-      ...prevData,
-      [section]: updatedArray,
-    }));
+  const addNewEntry = (arrayName) => {
+    const currentEntries = formData[arrayName];
+    const lastEntry = currentEntries[currentEntries.length - 1];
+
+    const isComplete =
+      (arrayName === "experience" &&
+        lastEntry.title &&
+        lastEntry.company &&
+        lastEntry.startDate &&
+        lastEntry.description) ||
+      (arrayName === "projects" &&
+        lastEntry.title &&
+        lastEntry.startDate &&
+        lastEntry.description) ||
+      (arrayName === "education" &&
+        lastEntry.instituteName &&
+        lastEntry.fieldOfStudy &&
+        lastEntry.startYear &&
+        lastEntry.endYear);
+
+    if (isComplete) {
+      const newEntryTemplate =
+        arrayName === "experience"
+          ? {
+              title: "",
+              company: "",
+              startDate: "",
+              endDate: "",
+              description: "",
+            }
+          : arrayName === "projects"
+          ? { title: "", startDate: "", endDate: "", description: "" }
+          : { instituteName: "", fieldOfStudy: "", startYear: "", endYear: "" };
+
+      setFormData((prevData) => ({
+        ...prevData,
+        [arrayName]: [...prevData[arrayName], newEntryTemplate],
+      }));
+    } else {
+      alert("Please complete the previous entry before adding a new one.");
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Updated Profile Data:', formData);
-    navigate('/profile'); // Redirect to profile page after updating
+    console.log("Updated Profile Data:", formData);
+    navigate("/profile");
   };
 
   return (
     <div className="max-w-4xl mx-auto p-4">
       <h2 className="text-2xl font-semibold text-center">Update Profile</h2>
       <form onSubmit={handleSubmit} className="mt-8 space-y-8">
-
         {/* Name Field */}
         <div className="border p-4 rounded-lg bg-gray-50 shadow">
           <label className="block text-gray-700">Name</label>
@@ -123,6 +170,42 @@ const UpdateProfilePage = () => {
             className="w-full p-2 border border-gray-300 rounded"
             required
           />
+        </div>
+
+        {/* Profile Picture Upload */}
+        <div className="border p-4 rounded-lg bg-gray-50 shadow">
+          <label className="block text-gray-700">Profile Picture</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => handleFileChange(e, "profilePicture")}
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+          {formData.profilePicture && (
+            <img
+              src={formData.profilePicture}
+              alt="Profile Preview"
+              className="mt-2 w-32 h-32 object-cover rounded-full"
+            />
+          )}
+        </div>
+
+        {/* Cover Photo Upload */}
+        <div className="border p-4 rounded-lg bg-gray-50 shadow">
+          <label className="block text-gray-700">Cover Photo</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => handleFileChange(e, "coverPhoto")}
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+          {formData.coverPhoto && (
+            <img
+              src={formData.coverPhoto}
+              alt="Cover Preview"
+              className="mt-2 w-full h-48 object-cover rounded"
+            />
+          )}
         </div>
 
         {/* Bio Field */}
@@ -137,33 +220,11 @@ const UpdateProfilePage = () => {
           />
         </div>
 
-        {/* Profile Picture URL Field */}
-        <div className="border p-4 rounded-lg bg-gray-50 shadow">
-          <label className="block text-gray-700">Profile Picture URL</label>
-          <input
-            type="text"
-            name="profilePicture"
-            value={formData.profilePicture}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-        </div>
-
-        {/* Cover Photo URL Field */}
-        <div className="border p-4 rounded-lg bg-gray-50 shadow">
-          <label className="block text-gray-700">Cover Photo URL</label>
-          <input
-            type="text"
-            name="coverPhoto"
-            value={formData.coverPhoto}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-        </div>
-
         {/* Skills Field */}
         <div className="border p-4 rounded-lg bg-gray-50 shadow">
-          <label className="block text-gray-700">Skills (comma separated)</label>
+          <label className="block text-gray-700">
+            Skills (comma separated)
+          </label>
           <input
             type="text"
             name="skills"
@@ -176,199 +237,181 @@ const UpdateProfilePage = () => {
 
         {/* Experience Section */}
         <div className="border p-4 rounded-lg bg-gray-50 shadow">
-          <h3 className="text-xl font-semibold text-gray-800">Experience</h3>
+          <label className="block text-gray-700">Experience</label>
           {formData.experience.map((exp, index) => (
-            <div key={index} className="mb-4 border p-4 rounded bg-gray-100">
+            <div key={index} className="mb-4">
               <input
                 type="text"
                 name="title"
-                value={exp.title}
-                onChange={(e) => handleArrayChange(e, 'experience', index)}
                 placeholder="Job Title"
-                className="block w-full p-2 border border-gray-300 rounded mb-2"
-                required
+                value={exp.title}
+                onChange={(e) => handleArrayChange(e, "experience", index)}
+                className="w-full p-2 mb-2 border border-gray-300 rounded"
               />
               <input
                 type="text"
                 name="company"
-                value={exp.company}
-                onChange={(e) => handleArrayChange(e, 'experience', index)}
                 placeholder="Company"
-                className="block w-full p-2 border border-gray-300 rounded mb-2"
-                required
+                value={exp.company}
+                onChange={(e) => handleArrayChange(e, "experience", index)}
+                className="w-full p-2 mb-2 border border-gray-300 rounded"
               />
               <input
                 type="text"
                 name="startDate"
+                placeholder="Start Date"
                 value={exp.startDate}
-                onChange={(e) => handleArrayChange(e, 'experience', index)}
-                placeholder="Start Date (e.g., Jan 2021)"
-                className="block w-full p-2 border border-gray-300 rounded mb-2"
-                required
+                onChange={(e) => handleArrayChange(e, "experience", index)}
+                className="w-full p-2 mb-2 border border-gray-300 rounded"
               />
               <input
                 type="text"
                 name="endDate"
+                placeholder="End Date"
                 value={exp.endDate}
-                onChange={(e) => handleArrayChange(e, 'experience', index)}
-                placeholder="End Date (e.g., Present)"
-                className="block w-full p-2 border border-gray-300 rounded mb-2"
+                onChange={(e) => handleArrayChange(e, "experience", index)}
+                className="w-full p-2 mb-2 border border-gray-300 rounded"
               />
               <textarea
                 name="description"
-                value={exp.description}
-                onChange={(e) => handleArrayChange(e, 'experience', index)}
                 placeholder="Description"
-                className="block w-full p-2 border border-gray-300 rounded mb-2"
-                required
+                value={exp.description}
+                onChange={(e) => handleArrayChange(e, "experience", index)}
+                className="w-full p-2 mb-2 border border-gray-300 rounded"
               />
-              <div className="flex justify-start">
+              {index > 0 && (
                 <button
                   type="button"
-                  onClick={() => removeEntry('experience', index)}
-                  className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+                  onClick={() => removeEntry("experience", index)}
+                  className="text-red-500"
                 >
                   Remove Experience
                 </button>
-              </div>
+              )}
             </div>
           ))}
-          <div className="flex justify-start">
-            <button
-              type="button"
-              onClick={() => addNewEntry('experience')}
-              className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
-            >
-              Add Experience
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => addNewEntry("experience")}
+            className="mt-2 text-blue-500"
+          >
+            Add Experience
+          </button>
         </div>
 
         {/* Projects Section */}
         <div className="border p-4 rounded-lg bg-gray-50 shadow">
-          <h3 className="text-xl font-semibold text-gray-800">Projects</h3>
+          <label className="block text-gray-700">Projects</label>
           {formData.projects.map((proj, index) => (
-            <div key={index} className="mb-4 border p-4 rounded bg-gray-100">
+            <div key={index} className="mb-4">
               <input
                 type="text"
                 name="title"
-                value={proj.title}
-                onChange={(e) => handleArrayChange(e, 'projects', index)}
                 placeholder="Project Title"
-                className="block w-full p-2 border border-gray-300 rounded mb-2"
-                required
+                value={proj.title}
+                onChange={(e) => handleArrayChange(e, "projects", index)}
+                className="w-full p-2 mb-2 border border-gray-300 rounded"
               />
               <input
                 type="text"
                 name="startDate"
+                placeholder="Start Date"
                 value={proj.startDate}
-                onChange={(e) => handleArrayChange(e, 'projects', index)}
-                placeholder="Start Date (e.g., Apr 2021)"
-                className="block w-full p-2 border border-gray-300 rounded mb-2"
-                required
+                onChange={(e) => handleArrayChange(e, "projects", index)}
+                className="w-full p-2 mb-2 border border-gray-300 rounded"
               />
               <input
                 type="text"
                 name="endDate"
+                placeholder="End Date"
                 value={proj.endDate}
-                onChange={(e) => handleArrayChange(e, 'projects', index)}
-                placeholder="End Date (e.g., Present)"
-                className="block w-full p-2 border border-gray-300 rounded mb-2"
+                onChange={(e) => handleArrayChange(e, "projects", index)}
+                className="w-full p-2 mb-2 border border-gray-300 rounded"
               />
               <textarea
                 name="description"
-                value={proj.description}
-                onChange={(e) => handleArrayChange(e, 'projects', index)}
                 placeholder="Description"
-                className="block w-full p-2 border border-gray-300 rounded mb-2"
-                required
+                value={proj.description}
+                onChange={(e) => handleArrayChange(e, "projects", index)}
+                className="w-full p-2 mb-2 border border-gray-300 rounded"
               />
-              <div className="flex justify-start">
+              {index > 0 && (
                 <button
                   type="button"
-                  onClick={() => removeEntry('projects', index)}
-                  className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+                  onClick={() => removeEntry("projects", index)}
+                  className="text-red-500"
                 >
                   Remove Project
                 </button>
-              </div>
+              )}
             </div>
           ))}
-          <div className="flex justify-start">
-            <button
-              type="button"
-              onClick={() => addNewEntry('projects')}
-              className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
-            >
-              Add Project
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => addNewEntry("projects")}
+            className="mt-2 text-blue-500"
+          >
+            Add Project
+          </button>
         </div>
 
         {/* Education Section */}
         <div className="border p-4 rounded-lg bg-gray-50 shadow">
-          <h3 className="text-xl font-semibold text-gray-800">Education</h3>
+          <label className="block text-gray-700">Education</label>
           {formData.education.map((edu, index) => (
-            <div key={index} className="mb-4 border p-4 rounded bg-gray-100">
+            <div key={index} className="mb-4">
               <input
                 type="text"
                 name="instituteName"
-                value={edu.instituteName}
-                onChange={(e) => handleArrayChange(e, 'education', index)}
                 placeholder="Institute Name"
-                className="block w-full p-2 border border-gray-300 rounded mb-2"
-                required
+                value={edu.instituteName}
+                onChange={(e) => handleArrayChange(e, "education", index)}
+                className="w-full p-2 mb-2 border border-gray-300 rounded"
               />
               <input
                 type="text"
                 name="fieldOfStudy"
-                value={edu.fieldOfStudy}
-                onChange={(e) => handleArrayChange(e, 'education', index)}
                 placeholder="Field of Study"
-                className="block w-full p-2 border border-gray-300 rounded mb-2"
-                required
+                value={edu.fieldOfStudy}
+                onChange={(e) => handleArrayChange(e, "education", index)}
+                className="w-full p-2 mb-2 border border-gray-300 rounded"
               />
               <input
                 type="text"
                 name="startYear"
-                value={edu.startYear}
-                onChange={(e) => handleArrayChange(e, 'education', index)}
                 placeholder="Start Year"
-                className="block w-full p-2 border border-gray-300 rounded mb-2"
-                required
+                value={edu.startYear}
+                onChange={(e) => handleArrayChange(e, "education", index)}
+                className="w-full p-2 mb-2 border border-gray-300 rounded"
               />
               <input
                 type="text"
                 name="endYear"
-                value={edu.endYear}
-                onChange={(e) => handleArrayChange(e, 'education', index)}
                 placeholder="End Year"
-                className="block w-full p-2 border border-gray-300 rounded mb-2"
-                required
+                value={edu.endYear}
+                onChange={(e) => handleArrayChange(e, "education", index)}
+                className="w-full p-2 mb-2 border border-gray-300 rounded"
               />
-              <div className="flex justify-start">
+              {index > 0 && (
                 <button
                   type="button"
-                  onClick={() => removeEntry('education', index)}
-                  className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+                  onClick={() => removeEntry("education", index)}
+                  className="text-red-500"
                 >
                   Remove Education
                 </button>
-              </div>
+              )}
             </div>
           ))}
-          <div className="flex justify-start">
-            <button
-              type="button"
-              onClick={() => addNewEntry('education')}
-              className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
-            >
-              Add Education
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => addNewEntry("education")}
+            className="mt-2 text-blue-500"
+          >
+            Add Education
+          </button>
         </div>
 
-        {/* Submit Button */}
         <div className="flex justify-center mt-6">
           <button
             type="submit"
