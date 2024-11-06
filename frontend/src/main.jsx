@@ -15,6 +15,7 @@ import Jobs from './pages/jobs.jsx'
 import Connections from './pages/connections.jsx'
 import Notifications from './pages/notifications.jsx'
 import Updateprofile from './pages/updateprofile.jsx'
+import JobDetailsPage from './pages/showjob.jsx'
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <App />
@@ -30,6 +31,7 @@ createRoot(document.getElementById('root')).render(
       <Route path='/updateprofile' element={<Updateprofile />} />
       
       <Route path='/connections' element={<Connections />} />
+      <Route path='/showjob' element={<JobDetailsPage />} />
 
 
       

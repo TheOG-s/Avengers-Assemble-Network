@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const JobCard = ({ image, title, company, location, salary, jobId }) => {
   return (
-    <Link to={`/jobs/${jobId}`} className="block hover:bg-gray-100 transition">
+    <Link to="/showjob" className="block hover:bg-gray-100 transition">
       <div className="bg-white border border-gray-200 shadow-md rounded-lg p-4 flex items-center space-x-4">
         
         {/* Company Logo */}

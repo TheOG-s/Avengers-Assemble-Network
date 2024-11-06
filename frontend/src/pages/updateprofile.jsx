@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const UpdateProfilePage = () => {
   const navigate = useNavigate();
@@ -19,50 +22,27 @@ const UpdateProfilePage = () => {
   });
 
   useEffect(() => {
-    const mockUserData = {
-      name: "John Doe",
-      bio: "Software Engineer with a passion for building impactful projects.",
-      profilePicture: "https://via.placeholder.com/150",
-      coverPhoto: "https://via.placeholder.com/800x200",
-      skills: ["JavaScript", "React", "Node.js"],
-      experience: [
-        {
-          title: "Frontend Developer",
-          company: "Tech Corp",
-          startDate: "Jan 2021",
-          endDate: "Present",
-          description:
-            "Developing and maintaining the front end of the main product.",
-        },
-      ],
-      projects: [
-        {
-          title: "Portfolio Website",
-          startDate: "Apr 2021",
-          endDate: "May 2021",
-          description: "Personal website showcasing my projects and blogs.",
-        },
-      ],
-      education: [
-        {
-          instituteName: "ABC University",
-          fieldOfStudy: "Computer Science",
-          startYear: 2017,
-          endYear: 2021,
-        },
-      ],
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("/user/updateprofile");
+        const userData = response.data;
+
+        setFormData({
+          name: userData.name,
+          bio: userData.bio,
+          profilePicture: userData.profilePicture,
+          coverPhoto: userData.coverPhoto,
+          skills: userData.skills.join(", "),
+          experience: userData.experience,
+          projects: userData.projects,
+          education: userData.education,
+        });
+      } catch (error) {
+        console.error("Error fetching profile data", error);
+      }
     };
 
-    setFormData({
-      name: mockUserData.name,
-      bio: mockUserData.bio,
-      profilePicture: mockUserData.profilePicture,
-      coverPhoto: mockUserData.coverPhoto,
-      skills: mockUserData.skills.join(", "),
-      experience: mockUserData.experience,
-      projects: mockUserData.projects,
-      education: mockUserData.education,
-    });
+    fetchData();
   }, []);
 
   const handleChange = (e) => {
@@ -110,6 +90,7 @@ const UpdateProfilePage = () => {
     const currentEntries = formData[arrayName];
     const lastEntry = currentEntries[currentEntries.length - 1];
 
+    // Check if the last entry is complete before adding a new one
     const isComplete =
       (arrayName === "experience" &&
         lastEntry.title &&
@@ -126,7 +107,7 @@ const UpdateProfilePage = () => {
         lastEntry.startYear &&
         lastEntry.endYear);
 
-    if (isComplete) {
+    if (isComplete || currentEntries.length === 0) {
       const newEntryTemplate =
         arrayName === "experience"
           ? {
@@ -145,18 +126,29 @@ const UpdateProfilePage = () => {
         [arrayName]: [...prevData[arrayName], newEntryTemplate],
       }));
     } else {
-      alert("Please complete the previous entry before adding a new one.");
+      toast.error(
+        "Please complete the previous entry before adding a new one."
+      );
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Updated Profile Data:", formData);
-    navigate("/profile");
+
+    try {
+      // Send updated profile data to backend
+      await axios.put("/user/profile", formData);
+      toast.success("Profile updated successfully!");
+      navigate("/profile"); // Navigate back to profile page after successful update
+    } catch (error) {
+      console.error("Error updating profile", error);
+      toast.error("Error updating profile");
+    }
   };
 
   return (
     <div className="max-w-4xl mx-auto p-4">
+      <ToastContainer />
       <h2 className="text-2xl font-semibold text-center">Update Profile</h2>
       <form onSubmit={handleSubmit} className="mt-8 space-y-8">
         {/* Name Field */}
@@ -222,10 +214,9 @@ const UpdateProfilePage = () => {
 
         {/* Skills Field */}
         <div className="border p-4 rounded-lg bg-gray-50 shadow">
-          <label className="block text-gray-700">
-            Skills (comma separated)
-          </label>
+          <label className="block text-gray-700">Skills</label>
           <input
+            placeholder="comma-separated"
             type="text"
             name="skills"
             value={formData.skills}
@@ -279,21 +270,19 @@ const UpdateProfilePage = () => {
                 onChange={(e) => handleArrayChange(e, "experience", index)}
                 className="w-full p-2 mb-2 border border-gray-300 rounded"
               />
-              {index > 0 && (
-                <button
-                  type="button"
-                  onClick={() => removeEntry("experience", index)}
-                  className="text-red-500"
-                >
-                  Remove Experience
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => removeEntry("experience", index)}
+                className="bg-red-500 text-white p-2 rounded mt-2"
+              >
+                Remove
+              </button>
             </div>
           ))}
           <button
             type="button"
             onClick={() => addNewEntry("experience")}
-            className="mt-2 text-blue-500"
+            className="bg-blue-500 text-white p-2 rounded mt-2"
           >
             Add Experience
           </button>
@@ -302,13 +291,13 @@ const UpdateProfilePage = () => {
         {/* Projects Section */}
         <div className="border p-4 rounded-lg bg-gray-50 shadow">
           <label className="block text-gray-700">Projects</label>
-          {formData.projects.map((proj, index) => (
+          {formData.projects.map((project, index) => (
             <div key={index} className="mb-4">
               <input
                 type="text"
                 name="title"
                 placeholder="Project Title"
-                value={proj.title}
+                value={project.title}
                 onChange={(e) => handleArrayChange(e, "projects", index)}
                 className="w-full p-2 mb-2 border border-gray-300 rounded"
               />
@@ -316,7 +305,7 @@ const UpdateProfilePage = () => {
                 type="text"
                 name="startDate"
                 placeholder="Start Date"
-                value={proj.startDate}
+                value={project.startDate}
                 onChange={(e) => handleArrayChange(e, "projects", index)}
                 className="w-full p-2 mb-2 border border-gray-300 rounded"
               />
@@ -324,32 +313,30 @@ const UpdateProfilePage = () => {
                 type="text"
                 name="endDate"
                 placeholder="End Date"
-                value={proj.endDate}
+                value={project.endDate}
                 onChange={(e) => handleArrayChange(e, "projects", index)}
                 className="w-full p-2 mb-2 border border-gray-300 rounded"
               />
               <textarea
                 name="description"
                 placeholder="Description"
-                value={proj.description}
+                value={project.description}
                 onChange={(e) => handleArrayChange(e, "projects", index)}
                 className="w-full p-2 mb-2 border border-gray-300 rounded"
               />
-              {index > 0 && (
-                <button
-                  type="button"
-                  onClick={() => removeEntry("projects", index)}
-                  className="text-red-500"
-                >
-                  Remove Project
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => removeEntry("projects", index)}
+                className="bg-red-500 text-white p-2 rounded mt-2"
+              >
+                Remove
+              </button>
             </div>
           ))}
           <button
             type="button"
             onClick={() => addNewEntry("projects")}
-            className="mt-2 text-blue-500"
+            className="bg-blue-500 text-white p-2 rounded mt-2"
           >
             Add Project
           </button>
@@ -392,32 +379,31 @@ const UpdateProfilePage = () => {
                 onChange={(e) => handleArrayChange(e, "education", index)}
                 className="w-full p-2 mb-2 border border-gray-300 rounded"
               />
-              {index > 0 && (
-                <button
-                  type="button"
-                  onClick={() => removeEntry("education", index)}
-                  className="text-red-500"
-                >
-                  Remove Education
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => removeEntry("education", index)}
+                className="bg-red-500 text-white p-2 rounded mt-2"
+              >
+                Remove
+              </button>
             </div>
           ))}
           <button
             type="button"
             onClick={() => addNewEntry("education")}
-            className="mt-2 text-blue-500"
+            className="bg-blue-500 text-white p-2 rounded mt-2"
           >
             Add Education
           </button>
         </div>
 
-        <div className="flex justify-center mt-6">
+        {/* Submit Button */}
+        <div className="text-center">
           <button
             type="submit"
-            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+            className="bg-green-500 text-white py-2 px-6 rounded-lg mt-4"
           >
-            Update Profile
+            Save Changes
           </button>
         </div>
       </form>
