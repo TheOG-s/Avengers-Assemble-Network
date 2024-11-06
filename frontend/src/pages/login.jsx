@@ -1,16 +1,17 @@
-// src/Login.jsx
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../../config/axios.js';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../config/axios.js";
+import { FaEye, FaEyeSlash } from "react-icons/fa"; 
 
 const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
 
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false); 
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -36,10 +37,10 @@ const Login = () => {
       };
 
       try {
-        const response = await axiosInstance.post('/user/login', userData);
+        const response = await axiosInstance.post("/user/login", userData);
         if (response.data.success) {
           console.log(response.data.message);
-          navigate('/profile');
+          navigate("/profile");
         } else {
           setErrors({ general: response.data.message || "Login failed" });
         }
@@ -52,35 +53,58 @@ const Login = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-lg rounded-lg">
-        <h2 className="text-2xl font-bold text-center text-gray-800">Login to Your Account</h2>
+        <h2 className="text-2xl font-bold text-center text-gray-800">
+          Login to Your Account
+        </h2>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Email
+            </label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className={`w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              className={`w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border ${
+                errors.email ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
               placeholder="Enter your email"
             />
-            {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+            )}
           </div>
 
           {/* Password */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
-              placeholder="Enter your password"
-            />
-            {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password}</p>}
+            <label className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className={`w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border ${
+                  errors.password ? "border-red-500" : "border-gray-300"
+                } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                placeholder="Enter your password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+            )}
           </div>
 
           {/* Submit Button */}
@@ -95,7 +119,7 @@ const Login = () => {
         <p className="mt-4 text-sm text-center text-gray-600">
           Don't have an account?{" "}
           <button
-            onClick={() => navigate('/signup')}
+            onClick={() => navigate("/signup")}
             className="text-blue-500 hover:underline"
           >
             Sign up here
