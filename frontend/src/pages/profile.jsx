@@ -59,7 +59,7 @@ const ProfilePage = () => {
           />
         </div>
 
-        {user.isOwner && (
+        {/* {user.isOwner && (
           <div className="absolute top-4 right-4 space-x-4">
             <button
               onClick={handleEditProfile}
@@ -74,7 +74,7 @@ const ProfilePage = () => {
               Logout
             </button>
           </div>
-        )}
+        )} */}
       </div>
       <div className="mt-16 text-center">
         <h2 className="text-2xl font-semibold">{user.name}</h2>

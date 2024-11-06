@@ -19,7 +19,7 @@ createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <App />
     <Routes>
-      <Route path='/' />
+      <Route path='/'  />
       <Route path='/signup'  element={<Signup/>} />
       <Route path='/login' element={<Login />} />
       <Route path='/Messages' element={<Messages />} />

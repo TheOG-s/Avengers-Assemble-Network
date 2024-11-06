@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../config/axios.js";
-import { FaEye, FaEyeSlash } from "react-icons/fa"; 
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; 
 
 const Login = () => {
   const navigate = useNavigate();
@@ -10,48 +12,49 @@ const Login = () => {
     password: "",
   });
 
-  const [errors, setErrors] = useState({});
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.email) newErrors.email = "Email is required";
-    if (!formData.password) newErrors.password = "Password is required";
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    if (!formData.email || !formData.password) {
+      toast.error("Email and password are required");
+      return false;
+    }
+    return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
       const { email, password } = formData;
-      const userData = {
-        email,
-        password,
-      };
 
       try {
-        const response = await axiosInstance.post("/user/login", userData);
+        const response = await axiosInstance.post("/user/login", {
+          email,
+          password,
+        });
         if (response.data.success) {
-          console.log(response.data.message);
+          toast.success("Login successful!");
           navigate("/profile");
         } else {
-          setErrors({ general: response.data.message || "Login failed" });
+          toast.error(response.data.message || "Login failed");
         }
       } catch (error) {
-        setErrors({ general: "An error occurred. Please try again." });
+        if (error.response && error.response.data) {
+          toast.error(error.response.data.message);
+        } else {
+          toast.error("An error occurred. Please try again.");
+        }
       }
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <ToastContainer /> {/* This renders the toast notifications */}
       <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-lg rounded-lg">
         <h2 className="text-2xl font-bold text-center text-gray-800">
           Login to Your Account
@@ -68,14 +71,9 @@ const Login = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className={`w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border ${
-                errors.email ? "border-red-500" : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              className="w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your email"
             />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-500">{errors.email}</p>
-            )}
           </div>
 
           {/* Password */}
@@ -89,9 +87,7 @@ const Login = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className={`w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border ${
-                  errors.password ? "border-red-500" : "border-gray-300"
-                } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                className="w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter your password"
               />
               <button
@@ -102,9 +98,6 @@ const Login = () => {
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-500">{errors.password}</p>
-            )}
           </div>
 
           {/* Submit Button */}
