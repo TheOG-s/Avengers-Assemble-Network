@@ -16,26 +16,24 @@ import Connections from './pages/connections.jsx'
 import Notifications from './pages/notifications.jsx'
 import Updateprofile from './pages/updateprofile.jsx'
 import JobDetailsPage from './pages/showjob.jsx'
-createRoot(document.getElementById('root')).render(
+import CreatePostPage from './pages/createpost.jsx'
+createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <App />
     <Routes>
-      <Route path='/'  />
-      <Route path='/signup'  element={<Signup/>} />
-      <Route path='/login' element={<Login />} />
-      <Route path='/Messages' element={<Messages />} />
-      <Route path='/notifications' element={<Notifications />} />
-      <Route path='/profile' element={<Profile />} />
-      <Route path='/jobs' element={<Jobs />} />
-      <Route path='/home' element={<Home />} />
-      <Route path='/updateprofile' element={<Updateprofile />} />
-      
-      <Route path='/connections' element={<Connections />} />
-      <Route path='/showjob' element={<JobDetailsPage />} />
+      <Route path="/" />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/Messages" element={<Messages />} />
+      <Route path="/notifications" element={<Notifications />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/jobs" element={<Jobs />} />
+      <Route path="/home" element={<Home />} />
+      <Route path="/updateprofile" element={<Updateprofile />} />
 
-
-      
-      </Routes>
-
-  </BrowserRouter>,
-)
+      <Route path="/connections" element={<Connections />} />
+      <Route path="/showjob" element={<JobDetailsPage />} />
+      <Route path="/createpost" element={<CreatePostPage />} />
+    </Routes>
+  </BrowserRouter>
+);
