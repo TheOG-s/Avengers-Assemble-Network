@@ -1,22 +1,49 @@
 import postModel from "../models/postModel.js";
+import userModel from "../models/userModel.js";
 import { uploadOnCloudinary } from "../config/cloudinary.js";
+
+//get feed possts
+export const getFeedPosts = async (req, res) => {
+  try {
+    const posts = await postModel
+      .find({ user: { $in: req.user.connections } })
+      .populate("user", "name username profilepicture headline")
+      .populate("comments.user", "name profilePicture")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(posts);
+  } catch (error) {
+    console.log("error in getfeedposts controller: ", error);
+    res.status(500).json({ message: "server error" });
+  }
+};
 
 // Create a new post
 export const createPost = async (req, res) => {
   try {
-    const { content } = req.body;
-    const userId = req.user.id; // Assuming user ID is available on req.user
-
-    let imageUrl = null;
-    if (req.file) {
-      const result = await uploadOnCloudinary(req.file.path);
-      imageUrl = result?.secure_url || null; // Check if result is null in case of error
+    const { content, image } = req.body;
+    console.log("hehehehe");
+    let newPost;
+    let imagePublicId = null;
+    if (image) {
+      const result = await uploadOnCloudinary(image);
+      imagePublicId = result?.public_id || null;
+      newPost = await postModel.create({
+        user: req.user._id,
+        content,
+        image: result.secure_url,
+        imagePublicId: imagePublicId,
+      });
+    } else {
+      newPost = await postModel.create({
+        user: req.user._id,
+        content,
+      });
     }
-
-    const newPost = await postModel.create({
-      user: userId,
-      content,
-      image: imageUrl,
+    await newPost.save();
+    // adding newpost id to user post array
+    await userModel.findByIdAndUpdate(req.user._id, {
+      $push: { posts: newPost._id },
     });
     // console.log("Request body:", req.id);
     // console.log("Uploaded file:", req.file);
@@ -25,72 +52,99 @@ export const createPost = async (req, res) => {
       .status(201)
       .json({ message: "Post created successfully", post: newPost });
   } catch (error) {
-    res.status(500).json({ message: "Error creating post", error });
+    res
+      .status(500)
+      .json({ message: "Error creating post", error: error.message });
   }
 };
 
 // Get all posts
-export const getAllPosts = async (req, res) => {
+
+export const getPostsById = async (req, res) => {
   try {
-    const posts = await postModel.find().populate("user", "name headline");
-    res.status(200).json(posts);
+    const userId = req.params.userId; // User ID from the URL parameter, not req.user
+    //console.log(userId);
+
+    // Fetch posts where the `user` field matches `userId`
+    const posts = await postModel
+      .find({ user: userId })
+      .populate("user", "name username profilePicture headline")
+      .populate("comments.user", "name profilePicture username headline")
+      .sort({ createdAt: -1 });
+
+    if (!posts) {
+      return res.status(404).json({ message: "No posts found for this user" });
+    }
+
+    res.status(200).json({ posts });
   } catch (error) {
-    res.status(500).json({ message: "Error fetching posts", error });
+    //console.log("Error in getPostsById controller:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching posts", error: error.message });
   }
 };
 
 // Update a post
-export const updatePost = async (req, res) => {
-  try {
-    const { content } = req.body;
-    const postId = req.params.id;
+// export const updatePost = async (req, res) => {
+//   try {
+//     const { content } = req.body;
+//     const postId = req.params.id;
 
-    let imageUrl;
-    if (req.file) {
-      try {
-        const result = await cloudinary.uploader.upload(req.file.path);
-        imageUrl = result.secure_url;
-      } catch (uploadError) {
-        console.error("Cloudinary upload failed:", uploadError);
-        return res
-          .status(500)
-          .json({ message: "Error uploading image", error: uploadError });
-      }
-    }
+//     let imageUrl;
+//     if (req.file) {
+//       try {
+//         const result = await cloudinary.uploader.upload(req.file.path);
+//         imageUrl = result.secure_url;
+//       } catch (uploadError) {
+//         console.error("Cloudinary upload failed:", uploadError);
+//         return res
+//           .status(500)
+//           .json({ message: "Error uploading image", error: uploadError });
+//       }
+//     }
 
-    const updateData = { content };
-    if (imageUrl) updateData.image = imageUrl;
+//     const updateData = { content };
+//     if (imageUrl) updateData.image = imageUrl;
 
-    const updatedPost = await postModel.findByIdAndUpdate(postId, updateData, {
-      new: true,
-    });
+//     const updatedPost = await postModel.findByIdAndUpdate(postId, updateData, {
+//       new: true,
+//     });
 
-    res
-      .status(200)
-      .json({ message: "Post updated successfully", post: updatedPost });
-  } catch (error) {
-    res.status(500).json({ message: "Error updating post", error });
-  }
-};
+//     res
+//       .status(200)
+//       .json({ message: "Post updated successfully", post: updatedPost });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error updating post", error });
+//   }
+// };
 
 // Delete a post
 export const deletePost = async (req, res) => {
   try {
     const postId = req.params.id;
-    const post = post.findById(postId);
+    const userId = req.user._id;
+    const post = await postModel.findById(postId);
 
-    // if (!post) return;
-    // res.status(404).json({ message: "Post not found" });
-
-    // if (post.author.tostring() !== userid.tostring()) {
-    //   return res
-    //     .status(403)
-    //     .json({ message: "you are not authorized to delete the post" });
-    // }
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    // jiski post hai vhi banda post ko delete kar rha hai ya nahi??
+    if (post.user.toString() !== userId.toString()) {
+      return res
+        .status(403)
+        .json({ message: "you are not authorized to delete the post" });
+    }
+    // cloudinary s image ko bhi delete krna if post contains it!
+    if (post.imagePublicId) {
+      await cloudinary.uploader.destroy(post.imagePublicId);
+    }
     await postModel.findByIdAndDelete(postId);
     res.status(200).json({ message: "Post deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error deleting post", error });
+    res
+      .status(500)
+      .json({ message: "Error deleting post", error: error.message });
   }
 };
 
@@ -98,7 +152,7 @@ export const deletePost = async (req, res) => {
 export const likePost = async (req, res) => {
   try {
     const postId = req.params.id;
-    const userId = req.user.id;
+    const userId = req.user._id;
 
     const post = await postModel.findById(postId);
 
@@ -108,11 +162,13 @@ export const likePost = async (req, res) => {
     } else {
       post.likes.splice(index, 1);
     }
-    console.log("noiseee");
+    //console.log("noiseee");
     await post.save();
     res.status(200).json({ message: "Like/Unlike successful", post });
   } catch (error) {
-    res.status(500).json({ message: "Error in like/unlike action", error });
+    res
+      .status(500)
+      .json({ message: "Error in like/unlike action", error: error.message });
   }
 };
 

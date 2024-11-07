@@ -73,6 +73,12 @@ const userSchema = new mongoose.Schema({
       ref: "user",
     },
   ],
+  posts: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "post",
+    },
+  ],
 });
 
 const userModel = mongoose.models.job || mongoose.model("user", userSchema);
