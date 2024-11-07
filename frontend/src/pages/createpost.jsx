@@ -24,7 +24,13 @@ const CreatePostPage = () => {
     // Validate that either text or image is provided
     if (!text && !image) {
       toast.error("Please add either text or an image to the post.", {
-        progress: undefined, r
+        progress: undefined, 
+      });
+      return;
+    }
+    if (!text ) {
+      toast.error("Text is Necessary", {
+        progress: undefined,
       });
       return;
     }

@@ -1,124 +1,195 @@
-import React from 'react';
-import { FaHeart, FaShare, FaRetweet, FaComment } from 'react-icons/fa';
+import React, { useState, useEffect } from "react";
+import { FaHeart, FaBookmark, FaComment } from "react-icons/fa";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const PostCard = ({ profileImage, name, position, time, description, postImage, likes, comments, reposts }) => {
+const PostCard = ({
+  profileImage,
+  name,
+  position,
+  time,
+  description,
+  postImage,
+  initialLikes,
+  initialComments,
+  initialSaves,
+  postId,
+}) => {
+  const [likes, setLikes] = useState(initialLikes || 0);
+  const [comments, setComments] = useState(initialComments || 0);
+  const [saves, setSaves] = useState(initialSaves || 0);
+  const [hasLiked, setHasLiked] = useState(false);
+  const [hasSaved, setHasSaved] = useState(false);
+  const [showCommentBox, setShowCommentBox] = useState(false);
+  const [newComment, setNewComment] = useState("");
+  const [commentList, setCommentList] = useState([]);
+
+  // Fetch comments, like, and save status when the component mounts
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [commentsResponse, statusResponse] = await Promise.all([
+          axios.get(`/api/posts/${postId}/comments`),
+          axios.get(`/api/posts/${postId}/status`),
+        ]);
+
+        setCommentList(commentsResponse.data.comments || []);
+        setHasLiked(statusResponse.data.hasLiked);
+        setHasSaved(statusResponse.data.hasSaved);
+      } catch (error) {
+        toast.error("Error fetching post data");
+      }
+    }
+    fetchData();
+  }, [postId]);
+
+  const handleLike = async () => {
+    if (hasLiked) return;
+    try {
+      setLikes(likes + 1);
+      setHasLiked(true);
+      await axios.post(`/api/posts/${postId}/like`);
+    } catch (error) {
+      toast.error("Error updating like");
+    }
+  };
+
+  const handleSave = async () => {
+    if (hasSaved) return;
+    try {
+      setSaves(saves + 1);
+      setHasSaved(true);
+      await axios.post(`/api/posts/${postId}/save`);
+    } catch (error) {
+      
+      setHasSaved(false);
+      toast.error("Error saving post");
+    }
+  };
+
+  const handleCommentClick = () => {
+    setShowCommentBox(!showCommentBox);
+  };
+
+  const handleAddComment = async () => {
+    if (newComment.trim() === "") return;
+
+    try {
+      const response = await axios.post(`/api/posts/${postId}/comment`, {
+        text: newComment,
+      });
+
+      // Assuming response returns the new comment object with username
+      const newCommentObj = response.data.comment;
+
+      setCommentList([...commentList, newCommentObj]);
+      setNewComment("");
+      setComments(comments + 1);
+    } catch (error) {
+      toast.error("Error adding comment");
+    }
+  };
+
   return (
-    <div className="bg-white border border-gray-200 shadow-md rounded-lg p-4 max-w-lg mx-auto">
+    <div className="bg-white border border-gray-200 shadow-lg rounded-2xl p-6 max-w-lg mx-auto hover:shadow-2xl transition-shadow duration-300">
+      <ToastContainer />
+
       {/* Header Section */}
       <div className="flex items-center mb-4">
-        <img 
-          src={profileImage} 
-          alt="Profile" 
-          className="w-12 h-12 rounded-full object-cover mr-3"
+        <img
+          src={profileImage}
+          alt="Profile"
+          className="w-14 h-14 rounded-full object-cover mr-4 shadow-sm border border-gray-300"
         />
         <div>
-          <h2 className="font-bold text-gray-800">{name || "Unknown User"}</h2> {/* Display name or fallback */}
-          <p className="text-sm text-gray-500">{position || "No position provided"} • {time || "N/A"}</p>
+          <h2 className="font-semibold text-gray-900 text-lg">
+            {name || "Unknown User"}
+          </h2>
+          <p className="text-sm text-gray-500">
+            {position || "No position provided"} • {time || "N/A"}
+          </p>
         </div>
       </div>
 
       {/* Description Section */}
-      <p className="text-gray-800 mb-4">
+      <p className="text-gray-700 mb-4 leading-relaxed">
         {description || "No description provided."}
       </p>
 
-      {/* Post Image - Only shows if postImage is provided */}
+      {/* Post Image */}
       {postImage && (
-        <img 
-          src={postImage} 
-          alt="Post Image" 
-          className="w-full h-64 object-cover rounded-lg mb-4"
+        <img
+          src={postImage}
+          alt="Post Image"
+          className="w-full h-64 object-cover rounded-lg mb-4 border border-gray-200 shadow-sm"
         />
       )}
 
       {/* Action Buttons */}
-      <div className="flex justify-between items-center text-gray-600 border-t border-gray-200 pt-4">
-        <div className="flex items-center flex-grow justify-between">
-          <button className="flex items-center space-x-2 hover:text-blue-500">
-            <FaHeart />
-            <span>{likes || "0"}</span>
-          </button>
-          <button className="flex items-center space-x-2 hover:text-blue-500">
-            <FaComment />
-            <span>{comments || "0"}</span>
-          </button>
-          <button className="flex items-center space-x-2 hover:text-blue-500">
-            <FaRetweet />
-            <span>{reposts || "0"}</span>
+      <div className="flex justify-between items-center text-gray-500 border-t border-gray-200 pt-4">
+        <button
+          className={`flex items-center space-x-2 ${
+            hasLiked ? "text-blue-600" : "text-gray-600"
+          } hover:text-blue-600 transition-colors duration-200`}
+          onClick={handleLike}
+        >
+          <FaHeart className="text-xl" />
+          <span className="text-sm font-medium">{likes}</span>
+        </button>
+        <button
+          className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors duration-200"
+          onClick={handleCommentClick}
+        >
+          <FaComment className="text-xl" />
+          <span className="text-sm font-medium">{comments}</span>
+        </button>
+        <button
+          className={`flex items-center space-x-2 ${
+            hasSaved ? "text-blue-600" : "text-gray-600"
+          } hover:text-blue-600 transition-colors duration-200`}
+          onClick={handleSave}
+        >
+          <FaBookmark className="text-xl" />
+        </button>
+      </div>
+
+      {/* Comment Box */}
+      {showCommentBox && (
+        <div className="mt-4">
+          {/* Previous comments */}
+          <div className="mb-4">
+            {commentList.length > 0 ? (
+              commentList.map((comment, index) => (
+                <p key={index} className="text-gray-700 mb-1">
+                  <span className="font-semibold text-gray-900 mr-2">
+                    {comment.username}:
+                  </span>
+                  {comment.text}
+                </p>
+              ))
+            ) : (
+              <p className="text-gray-500">No comments yet.</p>
+            )}
+          </div>
+
+          {/* New comment input */}
+          <textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Write a comment..."
+            className="w-full p-2 border rounded-lg mb-2"
+          />
+          <button
+            onClick={handleAddComment}
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+          >
+            Add Comment
           </button>
         </div>
-        {/* Uncomment if you want the share button */}
-        {/* <button className="flex items-center space-x-1 hover:text-blue-500">
-          <FaShare />
-          <span>Share</span>
-        </button> */}
-      </div>
+      )}
     </div>
   );
 };
 
-// Sample or demo images
-const CardExample = () => {
-  return (
-    <div className="p-4">
-      {/* Example with an image post */}
-      <PostCard
-        profileImage="https://via.placeholder.com/100"
-        name="Sagar Patidar"
-        position="Founder & CEO Primathon | Investor | IITD"
-        description="with image"
-        postImage="https://via.placeholder.com/400"
-        likes="10"
-        comments="5"
-        reposts="2"
-      />
-      
-      {/* Example with a text-only post */}
-      <PostCard
-        profileImage="https://via.placeholder.com/100"
-        name="Sagar Patidar"
-        position="Founder & CEO Primathon | Investor | IITD"
-        description="without image"
-        likes="20"
-        comments="10"
-        reposts="3"
-      />
-    </div>
-  );
-};
-
-export default CardExample;
-
-
-//when we will get data from backend
-// const CardGrid = () => {
-//   const [posts, setPosts] = useState([]);
-
-//   useEffect(() => {
-//     // Fetch posts from backend
-//     fetch('/api/posts') 
-//       .then((response) => response.json())
-//       .then((data) => setPosts(data))
-//       .catch((error) => console.error("Error fetching posts:", error));
-//   }, []);
-
-//   return (
-//     <div className="container mx-auto p-4">
-//       {posts.length > 0 ? (
-//         posts.map((post, index) => (
-//           <PostCard
-//             key={index}
-//             image={post.image}  // Handle optional image field
-//             title={post.title}
-//             description={post.description}
-//             user={post.user}   // 
-//           />
-//         ))
-//       ) : (
-//         <p className="text-center text-gray-500">No posts available</p>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default CardGrid;
+export default PostCard;
