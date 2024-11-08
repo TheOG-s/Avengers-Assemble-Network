@@ -33,7 +33,7 @@ const Feedposts = () => {
             bio={post.user.bio} // Backend response includes user headline
             description={post.content} // Assuming this is the post content/description
             postImage={post.image} // Assuming post has an image field
-            initialLikes={post.likesCount}
+            initialLikes={post.likes.length}
             initialComments={post.comments.length} // Count of comments from the populated comments array
             postId={post._id} // Unique post ID for interactions
           />

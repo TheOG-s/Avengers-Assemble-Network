@@ -152,44 +152,71 @@ export const deletePost = async (req, res) => {
       .json({ message: "Error deleting post", error: error.message });
   }
 };
-
 // Like/Unlike a post
 export const likePost = async (req, res) => {
   try {
+    // console.log("ha backend s bol rha hu");
     const postId = req.params.id;
-    const userId = req.user._id;
+    const userId = req.user._id; // Assumes the user ID is available in req.user
 
     const post = await postModel.findById(postId);
 
-    const index = post.likes.indexOf(userId);
-    if (index === -1) {
-      post.likes.push(userId);
-    } else {
-      post.likes.splice(index, 1);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
     }
-    //console.log("noiseee");
+
+    const isLiked = post.likes.includes(userId);
+
+    if (isLiked) {
+      post.likes = post.likes.filter((id) => !id.equals(userId));
+    } else {
+      post.likes.push(userId);
+    }
     await post.save();
-    res.status(200).json({ message: "Like/Unlike successful", post });
+    res.json({
+      message: isLiked ? "Like removed" : "Post liked",
+      likesCount: post.likes.length,
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error in like/unlike action", error: error.message });
+    console.error("Error in likePost:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
-
-// Add a comment to a post
 export const addComment = async (req, res) => {
-  try {
-    const postId = req.params.id;
-    const userId = req.user.id;
-    const { text } = req.body;
+  const postId = req.params.id;
+  const userId = req.user._id;
+  const { text } = req.body;
 
+  try {
+    // backend s bat kr rha h apun
+    if (!text || text.trim() === "") {
+      return res.status(400).json({ message: "Comment text is required" });
+    }
+
+    // Find the post by ID
     const post = await postModel.findById(postId);
-    post.comments.push({ user: userId, text });
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    const newComment = {
+      text,
+      user: userId,
+    };
+    post.comments.push(newComment);
+
     await post.save();
 
-    res.status(201).json({ message: "Comment added successfully", post });
+    await post.populate("comments.user", "name profilePicture");
+
+    const addedComment = post.comments[post.comments.length - 1];
+
+    res.status(201).json({
+      message: "Comment added successfully",
+      comment: addedComment,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Error adding comment", error });
+    console.error("Error adding comment:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };

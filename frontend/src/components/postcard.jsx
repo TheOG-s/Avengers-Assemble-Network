@@ -44,11 +44,13 @@ const PostCard = ({
   }, [postId]);
 
   const handleLike = async () => {
+    //console.log("hann yha aagyaa");
     if (hasLiked) return;
     try {
       setLikes(likes + 1);
       setHasLiked(true);
-      await axiosInstance.post(`/api/posts/${postId}/like`);
+      await axiosInstance.post(`/posts/${postId}`);
+      //console.log("or yha bhi");
     } catch (error) {
       toast.error("Error updating like");
     }
@@ -74,13 +76,13 @@ const PostCard = ({
     if (newComment.trim() === "") return;
 
     try {
-      const response = await axios.post(`/api/posts/${postId}/comment`, {
+      const response = await axiosInstance.post(`/posts/${postId}/comment`, {
         text: newComment,
       });
 
       // Assuming response returns the new comment object with username
       const newCommentObj = response.data.comment;
-
+      //console.log("yha tak aaya kya");
       setCommentList([...commentList, newCommentObj]);
       setNewComment("");
       setComments(comments + 1);
@@ -159,7 +161,7 @@ const PostCard = ({
                 </div>
               ))
             ) : (
-              <p className="text-gray-500">No comments yet.</p>
+              <p className="text-gray-500"></p>
             )}
           </div>
 

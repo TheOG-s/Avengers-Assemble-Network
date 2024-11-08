@@ -19,7 +19,7 @@ router.get("/", protectUserRoute, getFeedPosts); // Get all posts for feed
 router.get("/:userId", protectUserRoute, getPostsById); // Get all posts by id
 //router.put("/:id", upload.single("image"), updatePost); // Update a post with image upload
 router.delete("/:id", protectUserRoute, deletePost); // Delete a post
-router.put("/:id/like", protectUserRoute, likePost); // Like/unlike a post
+router.post("/:id", protectUserRoute, likePost); // Like/unlike a post
 router.post("/:id/comment", protectUserRoute, addComment); // Add a comment to a post
 
 export default router;
