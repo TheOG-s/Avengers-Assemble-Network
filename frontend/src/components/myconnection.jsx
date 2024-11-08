@@ -1,4 +1,4 @@
-// MyConnections.js
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../config/axios.js";
@@ -28,7 +28,7 @@ const MyConnections = () => {
   }, []);
 
   const handleLoadMore = () => {
-    setDisplayedConnections((prev) => prev + 10); // Load 10 more connections
+    setDisplayedConnections((prev) => prev + 10); 
   };
 
   const handleConnectionClick = (connectionId) => {
