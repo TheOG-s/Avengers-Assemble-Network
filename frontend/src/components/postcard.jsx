@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { FaHeart, FaBookmark, FaComment } from "react-icons/fa";
 import axios from "axios";
@@ -15,7 +16,7 @@ const PostCard = ({
   initialComments,
   initialSaves,
   postId,
-  commentsData, // Accept the populated comments data
+  commentsData,
 }) => {
   const [likes, setLikes] = useState(initialLikes || 0);
   const [comments, setComments] = useState(initialComments || 0);
@@ -25,8 +26,7 @@ const PostCard = ({
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [newComment, setNewComment] = useState("");
   const [commentList, setCommentList] = useState(commentsData || []);
-  // console.log("heheh");
-  // Fetch comments, like, and save status when the component mounts
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -44,13 +44,11 @@ const PostCard = ({
   }, [postId]);
 
   const handleLike = async () => {
-    //console.log("hann yha aagyaa");
     if (hasLiked) return;
     try {
       setLikes(likes + 1);
       setHasLiked(true);
       await axiosInstance.post(`/posts/${postId}`);
-      //console.log("or yha bhi");
     } catch (error) {
       toast.error("Error updating like");
     }
@@ -80,9 +78,7 @@ const PostCard = ({
         text: newComment,
       });
 
-      // Assuming response returns the new comment object with username
       const newCommentObj = response.data.comment;
-      //console.log("yha tak aaya kya");
       setCommentList([...commentList, newCommentObj]);
       setNewComment("");
       setComments(comments + 1);
@@ -94,7 +90,6 @@ const PostCard = ({
   return (
     <div className="bg-white border border-gray-200 shadow-lg rounded-2xl p-6 max-w-lg mx-auto hover:shadow-2xl transition-shadow duration-300">
       <ToastContainer />
-      {/* Header Section */}
       <div className="flex items-center mb-4">
         <img
           src={profilePicture}
@@ -108,7 +103,6 @@ const PostCard = ({
           <p className="text-sm text-gray-500">{bio || "No bio provided"}</p>
         </div>
       </div>
-      {/* Description Section */}
       <p className="text-gray-700 mb-4 leading-relaxed">
         {description || "No description provided."}
       </p>
@@ -119,7 +113,6 @@ const PostCard = ({
           className="w-full h-64 object-cover rounded-lg mb-4 border border-gray-200 shadow-sm"
         />
       )}
-      {/* Action Buttons */}
       <div className="flex justify-between items-center text-gray-500 border-t border-gray-200 pt-4">
         <button
           className={`flex items-center space-x-2 ${
@@ -146,26 +139,34 @@ const PostCard = ({
           <FaBookmark className="text-xl" />
         </button>
       </div>
-      {/* Comment Box */}
       {showCommentBox && (
         <div className="mt-4">
-          {/* Previous comments */}
           <div className="mb-4">
             {commentList.length > 0 ? (
               commentList.map((comment, index) => (
-                <div key={index} className="text-gray-700 mb-1">
-                  <span className="font-semibold text-gray-900 mr-2">
-                    {comment.user.name}: {/* Use comment.user.name */}
-                  </span>
-                  {comment.text}
+                <div
+                  key={index}
+                  className="flex items-start space-x-2 mb-2 p-2 rounded-md border border-gray-200 bg-gray-50"
+                >
+                  <img
+                    src={comment.user.profilePicture}
+                    alt="User Profile"
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-gray-900 text-sm">
+                      {comment.user.name}
+                    </span>
+                    <span className="text-gray-700 text-sm">
+                      {comment.text}
+                    </span>
+                  </div>
                 </div>
               ))
             ) : (
-              <p className="text-gray-500"></p>
+              <p className="text-gray-500">No comments yet.</p>
             )}
           </div>
-
-          {/* New comment input */}
           <textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
