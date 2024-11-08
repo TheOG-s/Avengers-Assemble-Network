@@ -5,10 +5,12 @@ import { uploadOnCloudinary } from "../config/cloudinary.js";
 //get feed possts
 export const getFeedPosts = async (req, res) => {
   try {
+    //console.log(req.user.connections);
     const posts = await postModel
       .find({ user: { $in: req.user.connections } })
-      .populate("user", "name username profilepicture headline")
+      .populate("user", "name username profilePicture bio")
       .populate("comments.user", "name profilePicture")
+      // .select("content image likes comments")
       .sort({ createdAt: -1 });
 
     res.status(200).json(posts);
@@ -21,12 +23,15 @@ export const getFeedPosts = async (req, res) => {
 // Create a new post
 export const createPost = async (req, res) => {
   try {
-    const { content, image } = req.body;
-    console.log("hehehehe");
+    const content = req.body.content;
+    //console.log(req.file);
+    const image = req.file;
+    //console.log(image);
     let newPost;
     let imagePublicId = null;
+    //console.log(image);
     if (image) {
-      const result = await uploadOnCloudinary(image);
+      const result = await uploadOnCloudinary(image.path);
       imagePublicId = result?.public_id || null;
       newPost = await postModel.create({
         user: req.user._id,

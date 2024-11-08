@@ -14,7 +14,7 @@ const postSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      required: false, // optional, as posts can be text-only
+      // optional, as posts can be text-only
     },
     imagePublicId: {
       // public id of image on cloudinary so that if a post is deleted it can also be destroyed from the cloudinary

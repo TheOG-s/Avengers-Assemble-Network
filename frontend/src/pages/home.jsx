@@ -1,10 +1,9 @@
-import React from 'react'
-import CardExample from '../components/postcard';
-
+import React from "react";
+import Feedposts from "../components/feedposts.jsx";
 const Home = () => {
   return (
     <div>
-      <CardExample/>
+      <Feedposts />
     </div>
   );
 };

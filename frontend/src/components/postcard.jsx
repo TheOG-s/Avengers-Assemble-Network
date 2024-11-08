@@ -3,18 +3,19 @@ import { FaHeart, FaBookmark, FaComment } from "react-icons/fa";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axiosInstance from "../../config/axios";
 
 const PostCard = ({
-  profileImage,
+  profilePicture,
   name,
-  position,
-  time,
+  bio,
   description,
   postImage,
   initialLikes,
   initialComments,
   initialSaves,
   postId,
+  commentsData, // Accept the populated comments data
 }) => {
   const [likes, setLikes] = useState(initialLikes || 0);
   const [comments, setComments] = useState(initialComments || 0);
@@ -23,18 +24,16 @@ const PostCard = ({
   const [hasSaved, setHasSaved] = useState(false);
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [newComment, setNewComment] = useState("");
-  const [commentList, setCommentList] = useState([]);
-
+  const [commentList, setCommentList] = useState(commentsData || []);
+  // console.log("heheh");
   // Fetch comments, like, and save status when the component mounts
   useEffect(() => {
     async function fetchData() {
       try {
-        const [commentsResponse, statusResponse] = await Promise.all([
-          axios.get(`/api/posts/${postId}/comments`),
+        const [statusResponse] = await Promise.all([
           axios.get(`/api/posts/${postId}/status`),
         ]);
 
-        setCommentList(commentsResponse.data.comments || []);
         setHasLiked(statusResponse.data.hasLiked);
         setHasSaved(statusResponse.data.hasSaved);
       } catch (error) {
@@ -49,7 +48,7 @@ const PostCard = ({
     try {
       setLikes(likes + 1);
       setHasLiked(true);
-      await axios.post(`/api/posts/${postId}/like`);
+      await axiosInstance.post(`/api/posts/${postId}/like`);
     } catch (error) {
       toast.error("Error updating like");
     }
@@ -62,7 +61,6 @@ const PostCard = ({
       setHasSaved(true);
       await axios.post(`/api/posts/${postId}/save`);
     } catch (error) {
-      
       setHasSaved(false);
       toast.error("Error saving post");
     }
@@ -94,11 +92,10 @@ const PostCard = ({
   return (
     <div className="bg-white border border-gray-200 shadow-lg rounded-2xl p-6 max-w-lg mx-auto hover:shadow-2xl transition-shadow duration-300">
       <ToastContainer />
-
       {/* Header Section */}
       <div className="flex items-center mb-4">
         <img
-          src={profileImage}
+          src={profilePicture}
           alt="Profile"
           className="w-14 h-14 rounded-full object-cover mr-4 shadow-sm border border-gray-300"
         />
@@ -106,18 +103,13 @@ const PostCard = ({
           <h2 className="font-semibold text-gray-900 text-lg">
             {name || "Unknown User"}
           </h2>
-          <p className="text-sm text-gray-500">
-            {position || "No position provided"} • {time || "N/A"}
-          </p>
+          <p className="text-sm text-gray-500">{bio || "No bio provided"}</p>
         </div>
       </div>
-
       {/* Description Section */}
       <p className="text-gray-700 mb-4 leading-relaxed">
         {description || "No description provided."}
       </p>
-
-      {/* Post Image */}
       {postImage && (
         <img
           src={postImage}
@@ -125,7 +117,6 @@ const PostCard = ({
           className="w-full h-64 object-cover rounded-lg mb-4 border border-gray-200 shadow-sm"
         />
       )}
-
       {/* Action Buttons */}
       <div className="flex justify-between items-center text-gray-500 border-t border-gray-200 pt-4">
         <button
@@ -153,7 +144,6 @@ const PostCard = ({
           <FaBookmark className="text-xl" />
         </button>
       </div>
-
       {/* Comment Box */}
       {showCommentBox && (
         <div className="mt-4">
@@ -161,12 +151,12 @@ const PostCard = ({
           <div className="mb-4">
             {commentList.length > 0 ? (
               commentList.map((comment, index) => (
-                <p key={index} className="text-gray-700 mb-1">
+                <div key={index} className="text-gray-700 mb-1">
                   <span className="font-semibold text-gray-900 mr-2">
-                    {comment.username}:
+                    {comment.user.name}: {/* Use comment.user.name */}
                   </span>
                   {comment.text}
-                </p>
+                </div>
               ))
             ) : (
               <p className="text-gray-500">No comments yet.</p>

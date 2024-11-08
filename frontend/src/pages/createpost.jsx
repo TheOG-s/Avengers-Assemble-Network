@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
+import axiosInstance from "../../config/axios";
 
 const CreatePostPage = () => {
   const [text, setText] = useState("");
@@ -24,11 +24,11 @@ const CreatePostPage = () => {
     // Validate that either text or image is provided
     if (!text && !image) {
       toast.error("Please add either text or an image to the post.", {
-        progress: undefined, 
+        progress: undefined,
       });
       return;
     }
-    if (!text ) {
+    if (!text) {
       toast.error("Text is Necessary", {
         progress: undefined,
       });
@@ -36,17 +36,17 @@ const CreatePostPage = () => {
     }
 
     const formData = new FormData();
-    formData.append("text", text);
+    formData.append("content", text);
     if (image) formData.append("image", image);
 
     try {
-      await axios.post("/api/posts", formData, {
+      await axiosInstance.post("/posts", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       toast.success("Post created successfully!");
       setText("");
       setImage(null);
-      setImagePreview(null); 
+      setImagePreview(null);
     } catch (error) {
       toast.error("Error creating post. Please try again.", {
         progress: undefined,
@@ -93,7 +93,7 @@ const CreatePostPage = () => {
                   type="button"
                   onClick={() => {
                     setImage(null);
-                    setImagePreview(null); 
+                    setImagePreview(null);
                   }}
                   className="absolute top-2 right-2 text-white bg-red-500 p-1 rounded-full hover:bg-red-600"
                 >
