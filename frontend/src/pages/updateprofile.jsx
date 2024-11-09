@@ -3,8 +3,13 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+<<<<<<< HEAD
 //const { username } = useParams();
  
+=======
+import axiosInstance from "../../config/axios";
+
+>>>>>>> d27afc103b8affd38e7c150a7bd83237841b6392
 const UpdateProfilePage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -25,18 +30,30 @@ const UpdateProfilePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/user/updateprofile");
+        const response = await axiosInstance.get("/user/profile");
         const userData = response.data;
 
         setFormData({
-          name: userData.name,
-          bio: userData.bio,
-          profilePicture: userData.profilePicture,
-          coverPhoto: userData.coverPhoto,
-          skills: userData.skills.join(", "),
-          experience: userData.experience,
-          projects: userData.projects,
-          education: userData.education,
+          name: userData.name || "",
+          bio: userData.bio || "",
+          profilePicture: userData.profilePicture || "",
+          coverPhoto: userData.coverPhoto || "",
+          skills: userData.skills ? userData.skills.join(", ") : "",
+          experience: userData.experience || [
+            {
+              title: "",
+              company: "",
+              startDate: "",
+              endDate: "",
+              description: "",
+            },
+          ],
+          projects: userData.projects || [
+            { title: "", startDate: "", endDate: "", description: "" },
+          ],
+          education: userData.education || [
+            { instituteName: "", fieldOfStudy: "", startYear: "", endYear: "" },
+          ],
         });
       } catch (error) {
         console.error("Error fetching profile data", error);
@@ -138,9 +155,9 @@ const UpdateProfilePage = () => {
 
     try {
       // Send updated profile data to backend
-      await axios.put("/user/profile", formData);
+      await axiosInstance.put("/user/updateprofile", formData);
       toast.success("Profile updated successfully!");
-      navigate("/profile"); // Navigate back to profile page after successful update
+      //navigate(`/explore/${userData.username}`); // Navigate back to profile page after successful update
     } catch (error) {
       console.error("Error updating profile", error);
       toast.error("Error updating profile");
