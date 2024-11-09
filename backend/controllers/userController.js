@@ -134,10 +134,9 @@ const updateProfile = async (req, res) => {
       }
     }
 
-
     // Not tested this part.
     // H-A-R-I-O-M check this with frontend
-    
+
     // if (req.body.profilePicture) {
     //   const uploadResult = await uploadOnCloudinary(req.body.profilePicture);
     //   if (uploadResult) {

@@ -15,7 +15,7 @@ export const getFeedPosts = async (req, res) => {
 
     res.status(200).json(posts);
   } catch (error) {
-    console.log("error in getfeedposts controller: ", error);
+    //console.log("error in getfeedposts controller: ", error);
     res.status(500).json({ message: "server error" });
   }
 };

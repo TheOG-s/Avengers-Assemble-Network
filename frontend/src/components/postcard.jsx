@@ -69,8 +69,8 @@ const PostCard = ({
   };
 
   const handleCommentClick = () => {
-    console.log(commentsData);
-    console.log(commentList?.length);
+    //console.log(commentsData);
+    //console.log(commentList?.length);
     setShowCommentBox(!showCommentBox);
   };
 
@@ -170,7 +170,6 @@ const PostCard = ({
                 </div>
               ))
             ) : (
-              <p className="text-gray-500">No comments yet.</p>
               <p className="text-gray-500">No comments yet.</p>
             )}
           </div>
