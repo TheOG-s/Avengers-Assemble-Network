@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { FaHeart, FaBookmark, FaComment } from "react-icons/fa";
-import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import axiosInstance from "../../config/axios";
+import "react-toastify/dist/ReactToastify.css";
 
 const PostCard = ({
   profilePicture,
@@ -15,7 +14,7 @@ const PostCard = ({
   initialComments,
   initialSaves,
   postId,
-  commentsData, // Accept the populated comments data
+  commentsData,
 }) => {
   const [likes, setLikes] = useState(initialLikes || 0);
   const [comments, setComments] = useState(initialComments || 0);
@@ -24,18 +23,18 @@ const PostCard = ({
   const [hasSaved, setHasSaved] = useState(false);
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [newComment, setNewComment] = useState("");
-  const [commentList, setCommentList] = useState(commentsData || []);
-  // console.log("heheh");
-  // Fetch comments, like, and save status when the component mounts
+  const [commentList, setCommentList] = useState(commentsData);
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     async function fetchData() {
       try {
-        const [statusResponse] = await Promise.all([
-          axios.get(`/api/posts/${postId}/status`),
-        ]);
-
-        setHasLiked(statusResponse.data.hasLiked);
-        setHasSaved(statusResponse.data.hasSaved);
+        const response = await axiosInstance.get(`/posts/${postId}`);
+        setHasLiked(response.data.hasLiked);
+        setHasSaved(response.data.hasSaved);
+        if (!commentsData || commentsData.length === 0) {
+          setCommentList(response.data.comment);
+        }
       } catch (error) {
         toast.error("Error fetching post data");
       }
@@ -44,57 +43,57 @@ const PostCard = ({
   }, [postId]);
 
   const handleLike = async () => {
-    //console.log("hann yha aagyaa");
     if (hasLiked) return;
+    setLikes((prev) => prev + 1);
+    setHasLiked(true);
     try {
-      setLikes(likes + 1);
-      setHasLiked(true);
       await axiosInstance.post(`/posts/${postId}`);
-      //console.log("or yha bhi");
     } catch (error) {
+      setLikes((prev) => prev - 1);
+      setHasLiked(false);
       toast.error("Error updating like");
     }
   };
 
   const handleSave = async () => {
     if (hasSaved) return;
+    setSaves((prev) => prev + 1);
+    setHasSaved(true);
     try {
-      setSaves(saves + 1);
-      setHasSaved(true);
-      await axios.post(`/api/posts/${postId}/save`);
+      await axiosInstance.post(`/posts/${postId}/save`);
     } catch (error) {
+      setSaves((prev) => prev - 1);
       setHasSaved(false);
       toast.error("Error saving post");
     }
   };
 
   const handleCommentClick = () => {
+    console.log(commentsData);
+    console.log(commentList?.length);
     setShowCommentBox(!showCommentBox);
   };
 
   const handleAddComment = async () => {
     if (newComment.trim() === "") return;
-
+    setLoading(true);
     try {
       const response = await axiosInstance.post(`/posts/${postId}/comment`, {
         text: newComment,
       });
-
-      // Assuming response returns the new comment object with username
-      const newCommentObj = response.data.comment;
-      //console.log("yha tak aaya kya");
-      setCommentList([...commentList, newCommentObj]);
+      setCommentList([...commentList, response.data.comment]);
       setNewComment("");
-      setComments(comments + 1);
+      setComments((prev) => prev + 1);
     } catch (error) {
       toast.error("Error adding comment");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="bg-white border border-gray-200 shadow-lg rounded-2xl p-6 max-w-lg mx-auto hover:shadow-2xl transition-shadow duration-300">
       <ToastContainer />
-      {/* Header Section */}
       <div className="flex items-center mb-4">
         <img
           src={profilePicture}
@@ -108,7 +107,6 @@ const PostCard = ({
           <p className="text-sm text-gray-500">{bio || "No bio provided"}</p>
         </div>
       </div>
-      {/* Description Section */}
       <p className="text-gray-700 mb-4 leading-relaxed">
         {description || "No description provided."}
       </p>
@@ -119,7 +117,6 @@ const PostCard = ({
           className="w-full h-64 object-cover rounded-lg mb-4 border border-gray-200 shadow-sm"
         />
       )}
-      {/* Action Buttons */}
       <div className="flex justify-between items-center text-gray-500 border-t border-gray-200 pt-4">
         <button
           className={`flex items-center space-x-2 ${
@@ -135,7 +132,9 @@ const PostCard = ({
           onClick={handleCommentClick}
         >
           <FaComment className="text-xl" />
-          <span className="text-sm font-medium">{comments}</span>
+          <span className="text-sm font-medium">
+            {showCommentBox ? "Hide comments" : `(${comments})`}
+          </span>
         </button>
         <button
           className={`flex items-center space-x-2 ${
@@ -146,38 +145,37 @@ const PostCard = ({
           <FaBookmark className="text-xl" />
         </button>
       </div>
-      {/* Comment Box */}
       {showCommentBox && (
         <div className="mt-4">
-          {/* Previous comments */}
           <div className="mb-4">
-            {commentList.length > 0 ? (
+            {commentList?.length > 0 ? (
               commentList.map((comment, index) => (
-                <div key={index} className="text-gray-700 mb-1">
-                  <span className="font-semibold text-gray-900 mr-2">
-                    {comment.user.name}: {/* Use comment.user.name */}
-                  </span>
-                  {comment.text}
+                <div key={index} className="border-b border-gray-200 pb-2 mb-2">
+                  <p className="text-sm font-medium">{comment.user.name}</p>
+                  <p className="text-gray-700">{comment.text}</p>
                 </div>
               ))
             ) : (
-              <p className="text-gray-500"></p>
+              <p className="text-gray-500">No comments yet.</p>
             )}
           </div>
 
-          {/* New comment input */}
-          <textarea
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Write a comment..."
-            className="w-full p-2 border rounded-lg mb-2"
-          />
-          <button
-            onClick={handleAddComment}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-          >
-            Add Comment
-          </button>
+          <div className="flex items-center space-x-2">
+            <input
+              type="text"
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Add a comment..."
+              className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:border-blue-400"
+            />
+            <button
+              onClick={handleAddComment}
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+              disabled={loading}
+            >
+              {loading ? "Adding..." : "Add Comment"}
+            </button>
+          </div>
         </div>
       )}
     </div>

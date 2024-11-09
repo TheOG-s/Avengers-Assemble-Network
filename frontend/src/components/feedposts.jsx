@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from "react";
-
-import PostCard from "./postcard"; // Import your PostCard component
+import PostCard from "./postcard.jsx";
 import axiosInstance from "../../config/axios";
 
 const Feedposts = () => {
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch posts using getfeedposts
   const getFeedPosts = async () => {
+    setLoading(true);
     try {
-      const response = await axiosInstance.get("/posts"); // Adjust the endpoint if needed
-      //console.log(response.data);
-      setPosts(response.data); // Assuming response returns an arrays of posts
+      const response = await axiosInstance.get("/posts");
+      setPosts(response.data); // Set the posts array
     } catch (error) {
       console.error("Error fetching posts:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -22,20 +23,23 @@ const Feedposts = () => {
   }, []);
 
   return (
-    <div className="feed-container max-w-2xl mx-auto p-4 ">
-      {/* If there are posts, map through them and render PostCard */}
-      {posts.length > 0 ? (
+    <div className="feed-container max-w-2xl mx-auto p-4">
+      {loading ? (
+        <p>Loading posts...</p>
+      ) : posts.length > 0 ? (
         posts.map((post) => (
           <PostCard
             key={post._id}
-            profileImage={post.user.profilepicture} // Assuming the backend response includes user profileImage
-            name={post.user.name} // Backend response includes user name
-            bio={post.user.bio} // Backend response includes user headline
-            description={post.content} // Assuming this is the post content/description
-            postImage={post.image} // Assuming post has an image field
+            profilePicture={post.user.profilepicture}
+            name={post.user.name}
+            bio={post.user.bio}
+            description={post.content}
+            postImage={post.image}
             initialLikes={post.likes.length}
-            initialComments={post.comments.length} // Count of comments from the populated comments array
-            postId={post._id} // Unique post ID for interactions
+            initialComments={post.comments.length}
+            initialSaves={post.saves}
+            postId={post._id}
+            commentsData={post.comments}
           />
         ))
       ) : (
