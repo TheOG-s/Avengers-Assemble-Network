@@ -1,4 +1,4 @@
-// MyConnections.js
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../config/axios.js";
@@ -28,11 +28,11 @@ const MyConnections = () => {
   }, []);
 
   const handleLoadMore = () => {
-    setDisplayedConnections((prev) => prev + 10); // Load 10 more connections
+    setDisplayedConnections((prev) => prev + 10); 
   };
 
-  const handleConnectionClick = (connectionId) => {
-    navigate(`/profile/${connectionId}`); // Navigate to the user's profile
+  const handleConnectionClick = (connectionUsername) => {
+    navigate(`/explore/${connectionUsername}`); // Navigate to the user's profile
   };
 
   return (
@@ -48,7 +48,7 @@ const MyConnections = () => {
           <div
             key={connection._id}
             className="flex items-center mb-4 cursor-pointer"
-            onClick={() => handleConnectionClick(connection._id)} // Clickable profile
+            onClick={() => handleConnectionClick(connection.username)} // Clickable profile
           >
             {/* Profile Picture */}
             <img

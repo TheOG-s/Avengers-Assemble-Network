@@ -1,27 +1,35 @@
-// NavBar.js
 import React, { useState } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
 import Logo from "./logo.jsx";
 import SearchBar from "./searchbar.jsx";
 import NavLinks from "./navlink.jsx";
 import MobileMenu from "./mobilemenu.jsx";
+import axiosInstance from "../../config/axios.js";
+import { useNavigate } from "react-router-dom";
 
-const NavBar = ({ isOwner }) => {
+const NavBar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate(); // Initialize the navigate function
 
-  const handleLogout = () => {
-    console.log("User logged out");
+  const handleLogout = async () => {
+    try {
+      await axiosInstance.post("/user/logout");
+      console.log("User logged out successfully.");
+      navigate("/login"); 
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
     <nav className="bg-white shadow-lg">
       <div className="container mx-auto px-4 py-2 flex justify-between items-center">
-        <Logo />
+         <Logo />
         <SearchBar />
 
         {/* Links for Desktop */}
         <div className="hidden md:flex space-x-6 items-center">
-          <NavLinks isOwner={isOwner} handleLogout={handleLogout} />
+          <NavLinks handleLogout={handleLogout} />
         </div>
 
         {/* Mobile Menu Toggle */}
@@ -37,9 +45,7 @@ const NavBar = ({ isOwner }) => {
       </div>
 
       {/* Mobile Menu Dropdown */}
-      {isMobileMenuOpen && (
-        <MobileMenu isOwner={isOwner} handleLogout={handleLogout} />
-      )}
+      {isMobileMenuOpen && <MobileMenu handleLogout={handleLogout} />}
     </nav>
   );
 };

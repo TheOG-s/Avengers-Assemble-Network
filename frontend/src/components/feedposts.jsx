@@ -28,19 +28,20 @@ const Feedposts = () => {
         <p>Loading posts...</p>
       ) : posts.length > 0 ? (
         posts.map((post) => (
-          <PostCard
-            key={post._id}
-            profilePicture={post.user.profilepicture}
-            name={post.user.name}
-            bio={post.user.bio}
-            description={post.content}
-            postImage={post.image}
-            initialLikes={post.likes.length}
-            initialComments={post.comments.length}
-            initialSaves={post.saves}
-            postId={post._id}
-            commentsData={post.comments}
-          />
+          <div key={post._id} className="mb-8">
+            {" "}
+            {/* Increased spacing between PostCards */}
+            <PostCard
+              profileImage={post.user.profilepicture} // Assuming the backend response includes user profileImage
+              name={post.user.name} // Backend response includes user name
+              bio={post.user.bio} // Backend response includes user headline
+              description={post.content} // Assuming this is the post content/description
+              postImage={post.image} // Assuming post has an image field
+              initialLikes={post.likes.length}
+              initialComments={post.comments.length} // Count of comments from the populated comments array
+              postId={post._id} // Unique post ID for interactions
+            />
+          </div>
         ))
       ) : (
         <p className="text-gray-500">No posts available.</p>

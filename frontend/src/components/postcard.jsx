@@ -150,32 +150,44 @@ const PostCard = ({
           <div className="mb-4">
             {commentList?.length > 0 ? (
               commentList.map((comment, index) => (
-                <div key={index} className="border-b border-gray-200 pb-2 mb-2">
-                  <p className="text-sm font-medium">{comment.user.name}</p>
-                  <p className="text-gray-700">{comment.text}</p>
+                <div
+                  key={index}
+                  className="flex items-start space-x-2 mb-2 p-2 rounded-md border border-gray-200 bg-gray-50"
+                >
+                  <img
+                    src={comment.user.profilePicture}
+                    alt="User Profile"
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-gray-900 text-sm">
+                      {comment.user.name}
+                    </span>
+                    <span className="text-gray-700 text-sm">
+                      {comment.text}
+                    </span>
+                  </div>
                 </div>
               ))
             ) : (
               <p className="text-gray-500">No comments yet.</p>
+              <p className="text-gray-500">No comments yet.</p>
             )}
           </div>
 
-          <div className="flex items-center space-x-2">
-            <input
-              type="text"
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Add a comment..."
-              className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:border-blue-400"
-            />
-            <button
-              onClick={handleAddComment}
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-              disabled={loading}
-            >
-              {loading ? "Adding..." : "Add Comment"}
-            </button>
-          </div>
+          {/* New comment input */}
+          <textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Write a comment..."
+            className="w-full p-2 border rounded-lg mb-2"
+          />
+          <button
+            onClick={handleAddComment}
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+          >
+            Add Comment
+          </button>
         </div>
       )}
     </div>

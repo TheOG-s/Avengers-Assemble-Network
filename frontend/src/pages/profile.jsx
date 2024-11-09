@@ -1,7 +1,8 @@
-// ProfilePage.js
+
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../../config/axios.js";
+import UsersPost from "../components/userposts.jsx";
 
 const ProfilePage = () => {
   const [user, setUser] = useState({});
@@ -9,13 +10,14 @@ const ProfilePage = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  const { username } = useParams();
+
   useEffect(() => {
     const fetchUser = async () => {
       setLoading(true);
       setError("");
       try {
-        const response = await axiosInstance.get("/user/profile");
-        console.log(response.data);
+        const response = await axiosInstance.get(`/explore/${username}`);
         setUser(response.data);
       } catch (error) {
         setError("Error fetching user profile.");
@@ -26,15 +28,9 @@ const ProfilePage = () => {
     };
 
     fetchUser();
-  }, []);
+  }, [username]);
 
-  const handleEditProfile = () => {
-    navigate("/updateprofile");
-  };
 
-  const handleLogout = () => {
-    navigate("/logout");
-  };
 
   if (loading) {
     return <div className="text-center">Loading...</div>;
@@ -43,14 +39,14 @@ const ProfilePage = () => {
   return (
     <div className="max-w-4xl mx-auto p-4">
       {error && <p className="text-red-600">{error}</p>}
+
+      {/* Cover and Profile Image */}
       <div className="relative">
         <img
           src={user.coverPhoto || "https://via.placeholder.com/640x256"}
           alt="Cover"
           className="w-full h-64 object-cover rounded-lg"
         />
-
-        {/* Responsive Profile Picture */}
         <div className="absolute left-4 -bottom-12 w-24 h-24 sm:w-20 sm:h-20 md:w-16 md:h-16 lg:w-24 lg:h-24 rounded-full border-4 border-white overflow-hidden shadow-lg">
           <img
             src={user.profilePicture || "https://via.placeholder.com/100"}
@@ -58,28 +54,15 @@ const ProfilePage = () => {
             className="w-full h-full object-cover"
           />
         </div>
-
-        {/* {user.isOwner && (
-          <div className="absolute top-4 right-4 space-x-4">
-            <button
-              onClick={handleEditProfile}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600"
-            >
-              Edit Profile
-            </button>
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600"
-            >
-              Logout
-            </button>
-          </div>
-        )} */}
       </div>
+
+      {/* User Info */}
       <div className="mt-16 text-center">
         <h2 className="text-2xl font-semibold">{user.name}</h2>
         <p className="text-gray-600 mt-2">{user.bio || "No bio available"}</p>
       </div>
+
+      {/* Skills */}
       <div className="mt-8 bg-gray-50 p-4 rounded-lg shadow">
         <h3 className="text-xl font-semibold text-gray-800">Skills</h3>
         <ul className="flex flex-wrap gap-2 mt-2">
@@ -99,6 +82,8 @@ const ProfilePage = () => {
           )}
         </ul>
       </div>
+
+      {/* Experience */}
       <hr className="my-8 border-gray-300" />
       <div className="mt-8 bg-gray-50 p-4 rounded-lg shadow">
         <h3 className="text-xl font-semibold text-gray-800">Experience</h3>
@@ -118,6 +103,8 @@ const ProfilePage = () => {
           <p className="text-gray-600">No experience listed.</p>
         )}
       </div>
+
+      {/* Projects */}
       <hr className="my-8 border-gray-300" />
       <div className="mt-8 bg-gray-50 p-4 rounded-lg shadow">
         <h3 className="text-xl font-semibold text-gray-800">Projects</h3>
@@ -135,6 +122,8 @@ const ProfilePage = () => {
           <p className="text-gray-600">No projects listed.</p>
         )}
       </div>
+
+      {/* Education */}
       <hr className="my-8 border-gray-300" />
       <div className="mt-8 bg-gray-50 p-4 rounded-lg shadow">
         <h3 className="text-xl font-semibold text-gray-800">Education</h3>
@@ -152,6 +141,10 @@ const ProfilePage = () => {
           <p className="text-gray-600">No education listed.</p>
         )}
       </div>
+
+      {/* User's Posts Section */}
+      <hr className="my-8 border-gray-300" />
+      <UsersPost username={username} />
     </div>
   );
 };
