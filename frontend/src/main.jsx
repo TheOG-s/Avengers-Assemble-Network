@@ -33,7 +33,7 @@ createRoot(document.getElementById("root")).render(
       <Route path="/explore/:username" element={<Profile />} />
       <Route path="/jobs" element={<Jobs />} />
       <Route path="/home" element={<Home />} />
-      <Route path="/updateprofile" element={<Updateprofile />} />
+      <Route path="/updateprofile/:username" element={<Updateprofile />} />
 
       <Route path="/connections" element={<Connections />} />
       <Route path="/showjob" element={<JobDetailsPage />} />

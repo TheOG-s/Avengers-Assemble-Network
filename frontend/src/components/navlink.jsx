@@ -92,7 +92,7 @@ const NavLinks = ({ handleLogout }) => {
                 </NavLink>
                 {/* Edit Profile */}
                 <NavLink
-                  to="/updateprofile"
+                  to={`/updateprofile/${user.username}`}
                   className="block px-4 py-2 text-gray-600 hover:text-blue-500"
                   onClick={() => setDropdownOpen(false)}
                 >
