@@ -40,6 +40,7 @@ const Feedposts = () => {
               initialLikes={post.likes.length}
               initialComments={post.comments.length} // Count of comments from the populated comments array
               postId={post._id} // Unique post ID for interactions
+              commentsData={post.comments}
             />
           </div>
         ))

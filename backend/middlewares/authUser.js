@@ -3,7 +3,7 @@ import userModel from "../models/userModel.js";
 
 const protectUserRoute = async (req, res, next) => {
   try {
-    console.log(req.params.userId);
+    //console.log(req.params.userId);
     const token = req.cookies["token"];
     if (!token) {
       return res.json({ message: "Unauthorized Access: No token." });

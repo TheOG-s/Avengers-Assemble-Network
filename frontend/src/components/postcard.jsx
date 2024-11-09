@@ -69,8 +69,8 @@ const PostCard = ({
   };
 
   const handleCommentClick = () => {
-    console.log(commentsData);
-    console.log(commentList?.length);
+    //console.log(commentsData);
+    //console.log(commentList?.length);
     setShowCommentBox(!showCommentBox);
   };
 
