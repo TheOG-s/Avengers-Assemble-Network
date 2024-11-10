@@ -36,7 +36,18 @@ const jobSchema = new mongoose.Schema({
   datePosted: {
     type: Date,
     required: true,
-  }
+  },
+  status: {
+    type: String,
+    enum: ["active", "inactive"],
+    default: "active",
+  },
+  applicants: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+    },
+  ],
 });
 
 const jobModel = mongoose.models.job || mongoose.model("job", jobSchema);
