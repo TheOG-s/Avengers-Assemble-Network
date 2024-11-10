@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../config/axios.js";
 import { ToastContainer, toast } from "react-toastify";
@@ -14,7 +13,7 @@ const UsersPost = ({ username }) => {
       setLoading(true);
       setError("");
       try {
-        const response = await axiosInstance.get(`/user/posts/${username}`);
+        const response = await axiosInstance.get(`/posts/${username}`);
         if (response.data.success) {
           setPosts(response.data.posts);
         } else {
@@ -33,6 +32,7 @@ const UsersPost = ({ username }) => {
 
   const handleDeletePost = async (postId) => {
     try {
+      console.log(postId);
       const response = await axiosInstance.delete(`/posts/${postId}`);
       if (response.data.success) {
         toast.success("Post deleted successfully");
@@ -59,8 +59,15 @@ const UsersPost = ({ username }) => {
           <div key={index} className="mt-4 p-4 bg-white rounded-lg shadow-sm">
             <h4 className="text-lg font-semibold">{post.title}</h4>
             <p className="text-gray-600 mt-2">{post.content}</p>
+            {post.image && (
+              <img
+                src={post.image}
+                alt="Post visual"
+                className="mt-4 max-w-full h-auto rounded-lg shadow-md"
+              />
+            )}
             <p className="text-gray-500 text-sm mt-2">
-              Posted on: {new Date(post.datePosted).toLocaleDateString()}
+              Posted on: {new Date(post.createdAt).toLocaleDateString()}
             </p>
 
             {/* Display Likes */}
@@ -69,21 +76,21 @@ const UsersPost = ({ username }) => {
             </div>
 
             {/* Display Comments */}
-            <div className="mt-2">
+            {/* <div className="mt-2">
               <strong>Comments:</strong>
               {post.comments.length > 0 ? (
                 post.comments.map((comment, idx) => (
                   <div key={idx} className="mt-2">
-                    <p className="text-gray-600">{comment.content}</p>
+                    <p className="text-gray-600">{comment.text}</p>
                     <p className="text-gray-400 text-sm">
-                      By: {comment.author}
+                      By: {comment.user || "Anonymous"}
                     </p>
                   </div>
                 ))
               ) : (
                 <p className="text-gray-600">No comments yet.</p>
               )}
-            </div>
+            </div> */}
 
             {/* Delete Button */}
             <button

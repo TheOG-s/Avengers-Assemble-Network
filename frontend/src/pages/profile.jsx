@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../../config/axios.js";
@@ -29,8 +28,6 @@ const ProfilePage = () => {
 
     fetchUser();
   }, [username]);
-
-
 
   if (loading) {
     return <div className="text-center">Loading...</div>;

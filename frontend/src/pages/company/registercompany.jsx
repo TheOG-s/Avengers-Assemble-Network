@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axiosInstance from "../../../config/axios.js"; 
+import { Link } from "react-router-dom";
+import axiosInstance from "../../../config/axios.js";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -8,11 +8,9 @@ const CompanyRegistration = () => {
   const [formData, setFormData] = useState({
     companyName: "",
     email: "",
-    address: "",
-    phone: "",
-    website: "",
-    industryType: "",
+    password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,8 +18,8 @@ const CompanyRegistration = () => {
   };
 
   const validateForm = () => {
-    const { companyName, email, address, phone } = formData;
-    if (!companyName || !email || !address || !phone) {
+    const { companyName, email, password } = formData;
+    if (!companyName || !email || !password) {
       toast.error("Please fill in all required fields.");
       return false;
     }
@@ -33,19 +31,12 @@ const CompanyRegistration = () => {
     if (validateForm()) {
       try {
         const response = await axiosInstance.post(
-          "/company/register",
+          "/company/signup",
           formData
         );
         if (response.data.success) {
           toast.success("Company registered successfully!");
-          setFormData({
-            companyName: "",
-            email: "",
-            address: "",
-            phone: "",
-            website: "",
-            industryType: "",
-          });
+          setFormData({ companyName: "", email: "", password: "" });
         } else {
           toast.error(response.data.message || "Failed to register company.");
         }
@@ -94,62 +85,28 @@ const CompanyRegistration = () => {
             />
           </div>
 
-          {/* Address */}
+          {/* Password */}
           <div>
             <label className="block text-gray-700 font-semibold">
-              Address<span className="text-red-500">*</span>
+              Password<span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              className="w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          {/* Phone */}
-          <div>
-            <label className="block text-gray-700 font-semibold">
-              Phone<span className="text-red-500">*</span>
-            </label>
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              className="w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          {/* Website */}
-          <div>
-            <label className="block text-gray-700 font-semibold">Website</label>
-            <input
-              type="text"
-              name="website"
-              value={formData.website}
-              onChange={handleChange}
-              className="w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Optional"
-            />
-          </div>
-
-          {/* Industry Type */}
-          <div>
-            <label className="block text-gray-700 font-semibold">
-              Industry Type
-            </label>
-            <input
-              type="text"
-              name="industryType"
-              value={formData.industryType}
-              onChange={handleChange}
-              className="w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Optional"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600 focus:outline-none"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
           </div>
 
           {/* Submit Button */}
@@ -161,10 +118,9 @@ const CompanyRegistration = () => {
           </button>
         </form>
 
-        {/* Link to Company Login */}
         <p className="mt-4 text-sm text-center text-gray-600">
           Already have an account?{" "}
-          <Link to="/companylogin" className="text-blue-500 hover:underline">
+          <Link to="/company/login" className="text-blue-500 hover:underline">
             Log in here
           </Link>
         </p>

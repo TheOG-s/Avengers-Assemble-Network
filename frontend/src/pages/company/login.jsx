@@ -19,8 +19,8 @@ const LoginPage = () => {
   };
 
   const validateForm = () => {
-    if (!formData.companyName || !formData.email || !formData.password) {
-      toast.error("Company name, email, and password are required");
+    if ( !formData.email || !formData.password) {
+      toast.error(" email, and password are required");
       return false;
     }
     return true;
@@ -29,17 +29,16 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      const { companyName, email, password } = formData;
+      const { email, password } = formData;
 
       try {
-        const response = await axiosInstance.post("/user/login", {
-          companyName,
+        const response = await axiosInstance.post("/company/login", {
           email,
           password,
         });
         if (response.data.success) {
           toast.success("Login successful!");
-          navigate("/home");
+          navigate("/company/home");
         } else {
           toast.error(response.data.message || "Login failed");
         }
@@ -63,23 +62,7 @@ const LoginPage = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Company Name Input */}
-          <div>
-            <label
-              htmlFor="companyName"
-              className="block text-gray-700 font-semibold"
-            >
-              Company Name
-            </label>
-            <input
-              type="text"
-              name="companyName"
-              value={formData.companyName}
-              onChange={handleChange}
-              className="w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter your company name"
-              required
-            />
-          </div>
+       
 
           {/* Email Input */}
           <div>
@@ -140,7 +123,7 @@ const LoginPage = () => {
         <p className="mt-4 text-sm text-center text-gray-600">
           Don't have an account?{" "}
           <button
-            onClick={() => navigate("/registercompany")}
+            onClick={() => navigate("/company/signup")}
             className="text-blue-600 hover:underline"
           >
             Sign up here

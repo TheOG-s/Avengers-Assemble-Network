@@ -72,7 +72,7 @@ const NavLinks = ({ handleLogout }) => {
         <FaBriefcase className="inline mr-1" /> Jobs
       </NavLink>
 
-      {/* User Icon with Dropdown */}
+   
       <div className="relative inline-block">
         <FaUserCircle
           className="text-gray-600 hover:text-blue-500 cursor-pointer text-xl"
@@ -92,7 +92,7 @@ const NavLinks = ({ handleLogout }) => {
                 </NavLink>
                 {/* Edit Profile */}
                 <NavLink
-                  to="/updateprofile"
+                  to={`/updateprofile/${user.username}`}
                   className="block px-4 py-2 text-gray-600 hover:text-blue-500"
                   onClick={() => setDropdownOpen(false)}
                 >
@@ -118,7 +118,7 @@ const NavLinks = ({ handleLogout }) => {
                 </button>
               </>
             ) : (
-              /* Login Button for Logged-Out Users */
+              
               <NavLink
                 to="/login"
                 className="block px-4 py-2 text-gray-600 hover:text-blue-500"

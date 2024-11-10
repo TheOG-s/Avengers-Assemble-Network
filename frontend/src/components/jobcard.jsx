@@ -31,7 +31,7 @@ const JobCardGrid = () => {
   useEffect(() => {
     // Fetch jobs from the backend
     axios
-      .get("user/showAll")
+      .get("/showAll")
       .then((response) => {
         setJobs(response.data); // assuming response.data is an array of jobs
       })

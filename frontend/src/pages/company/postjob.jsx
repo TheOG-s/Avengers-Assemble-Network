@@ -6,14 +6,12 @@ import "react-toastify/dist/ReactToastify.css";
 const PostJob = () => {
   const [formData, setFormData] = useState({
     jobTitle: "",
-    company: "",
     description: "",
     location: "",
     salary: "",
     skills: [],
     experience: "",
     qualifications: [],
-    datePosted: new Date().toISOString().slice(0, 10),
   });
 
   const handleChange = (e) => {
@@ -27,16 +25,8 @@ const PostJob = () => {
   };
 
   const validateForm = () => {
-    const { jobTitle, company, description, location, salary, datePosted } =
-      formData;
-    if (
-      !jobTitle ||
-      !company ||
-      !description ||
-      !location ||
-      !salary ||
-      !datePosted
-    ) {
+    const { jobTitle, description, location, salary } = formData;
+    if (!jobTitle || !description || !location || !salary) {
       toast.error("Please fill in all required fields.");
       return false;
     }
@@ -47,19 +37,18 @@ const PostJob = () => {
     e.preventDefault();
     if (validateForm()) {
       try {
+        // Send form data without datePosted to backend
         const response = await axiosInstance.post("/job/post", formData);
         if (response.data.success) {
           toast.success("Job posted successfully!");
           setFormData({
             jobTitle: "",
-            company: "",
             description: "",
             location: "",
             salary: "",
             skills: [],
             experience: "",
             qualifications: [],
-            datePosted: new Date().toISOString().slice(0, 10),
           });
         } else {
           toast.error(response.data.message || "Failed to post job.");
@@ -91,24 +80,6 @@ const PostJob = () => {
               type="text"
               name="jobTitle"
               value={formData.jobTitle}
-              onChange={handleChange}
-              className="w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          {/* Company */}
-          <div>
-            <label
-              htmlFor="company"
-              className="block text-gray-700 font-semibold"
-            >
-              Company<span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="company"
-              value={formData.company}
               onChange={handleChange}
               className="w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
@@ -219,24 +190,6 @@ const PostJob = () => {
               onChange={(e) => handleArrayChange(e, "qualifications")}
               className="w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="E.g., Bachelor's Degree, Certification"
-            />
-          </div>
-
-          {/* Date Posted */}
-          <div>
-            <label
-              htmlFor="datePosted"
-              className="block text-gray-700 font-semibold"
-            >
-              Date Posted<span className="text-red-500">*</span>
-            </label>
-            <input
-              type="date"
-              name="datePosted"
-              value={formData.datePosted}
-              onChange={handleChange}
-              className="w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
             />
           </div>
 
