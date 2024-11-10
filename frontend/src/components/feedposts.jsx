@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PostCard from "./postcard.jsx";
 import axiosInstance from "../../config/axios";
-
+import { Link } from "react-router-dom";
 const Feedposts = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,6 +21,7 @@ const Feedposts = () => {
   useEffect(() => {
     getFeedPosts();
   }, []);
+  // /console.log(posts.user.username);
 
   return (
     <div className="feed-container max-w-2xl mx-auto p-4">
@@ -30,7 +31,7 @@ const Feedposts = () => {
         posts.map((post) => (
           <div key={post._id} className="mb-8">
             {" "}
-            {/* Increased spacing between PostCards */}
+           <Link to={`/explore/${post.user.username}`}>
             <PostCard
               profileImage={post.user.profilepicture} // Assuming the backend response includes user profileImage
               name={post.user.name} // Backend response includes user name
@@ -42,6 +43,7 @@ const Feedposts = () => {
               postId={post._id} // Unique post ID for interactions
               commentsData={post.comments}
             />
+           </Link>
           </div>
         ))
       ) : (
