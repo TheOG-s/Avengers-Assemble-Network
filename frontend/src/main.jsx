@@ -20,6 +20,7 @@ import LoginPage from "./pages/company/login.jsx";
 import PostJob from "./pages/company/postjob.jsx";
 import CompanyRegistration from "./pages/company/registercompany.jsx";
 import CompanyJobs from "./pages/company/showjob.jsx";
+import comapanyhome from "./pages/company/home.jsx"
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <App />
@@ -37,10 +38,12 @@ createRoot(document.getElementById("root")).render(
       <Route path="/connections" element={<Connections />} />
       <Route path="/showjob" element={<JobDetailsPage />} />
       <Route path="/createpost" element={<CreatePostPage />} />
-      <Route path="/companylogin" element={<LoginPage />} />
-      <Route path="/postjob" element={<PostJob />} />
-      <Route path="/registercompany" element={<CompanyRegistration />} />
-      <Route path="/companyjob" element={<CompanyJobs />} />
+
+      <Route path="/company/login" element={<LoginPage />} />
+      <Route path="/company/postjob" element={<PostJob />} />
+      <Route path="/company/signup" element={<CompanyRegistration />} />
+      <Route path="/company/showjob" element={<CompanyJobs />} />
+      <Route path="/company/home" element={<comapanyhome />} />
     </Routes>
   </BrowserRouter>
 );

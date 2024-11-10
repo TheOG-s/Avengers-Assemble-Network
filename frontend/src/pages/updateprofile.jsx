@@ -3,13 +3,11 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-<<<<<<< HEAD
+
 //const { username } = useParams();
  
-=======
 import axiosInstance from "../../config/axios";
 
->>>>>>> d27afc103b8affd38e7c150a7bd83237841b6392
 const UpdateProfilePage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({

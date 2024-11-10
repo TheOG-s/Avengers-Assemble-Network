@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 const createToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET_KEY);
+  return jwt.sign({ id }, process.env.JWT_SECRET_KEY, { expiresIn: "3d" });
 };
 
 const loginCompany = async (req, res) => {
@@ -24,7 +24,12 @@ const loginCompany = async (req, res) => {
     }
 
     const token = createToken(company._id);
-    res.json({ success: true, token });
+
+    res.cookie("token", token, {
+      maxAge: 3 * 24 * 60 * 60 * 1000,
+    });
+
+    res.json({ success: true, message: "Company logged in successfully." });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
@@ -61,11 +66,74 @@ const signupCompany = async (req, res) => {
 
     const token = createToken(company._id);
 
-    res.json({ success: true, token });
+    res.cookie("token", token, {
+      maxAge: 3 * 24 * 60 * 60 * 1000,
+    });
+
+    res.json({ success: true, message: "Company account created successfully." });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
   }
 };
 
-export { loginCompany, signupCompany };
+const logoutCompany = async (req, res) => {
+  res.clearCookie("token");
+  res.json({ success: true, message: "Company logged out succesfully." });
+};
+
+const getCurrentCompany = async (req, res) => {
+  try {
+    res.json(req.company);
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+const updateProfile = async (req, res) => {
+  try {
+    const updatableDetails = [
+      "profilePicture",
+      "coverPhoto",
+      "description",
+    ];
+
+    const updatedDetails = {};
+
+    for (const detail of updatableDetails) {
+      if (req.body[detail]) {
+        updatedDetails[detail] = req.body[detail];
+      }
+    }
+
+
+    // Not tested this part.
+    // H-A-R-I-O-M check this with frontend
+    
+    // if (req.body.profilePicture) {
+    //   const uploadResult = await uploadOnCloudinary(req.body.profilePicture);
+    //   if (uploadResult) {
+    //     updatedDetails.profilePicture = uploadResult.secure_url;
+    //   }
+    // }
+
+    // if (req.body.coverPhoto) {
+    //   const uploadResult = await uploadOnCloudinary(req.body.coverPhoto);
+    //   if (uploadResult) {
+    //     updatedDetails.coverPhoto = uploadResult.secure_url;
+    //   }
+    // }
+
+    const company = await companyModel
+      .findByIdAndUpdate(req.company._id, { $set: updatedDetails }, { new: true })
+      .select("-password");
+
+    res.json(company);
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export { loginCompany, signupCompany, logoutCompany, getCurrentCompany, updateProfile };
