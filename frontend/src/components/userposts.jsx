@@ -76,7 +76,7 @@ const UsersPost = ({ username }) => {
             </div>
 
             {/* Display Comments */}
-            <div className="mt-2">
+            {/* <div className="mt-2">
               <strong>Comments:</strong>
               {post.comments.length > 0 ? (
                 post.comments.map((comment, idx) => (
@@ -90,7 +90,7 @@ const UsersPost = ({ username }) => {
               ) : (
                 <p className="text-gray-600">No comments yet.</p>
               )}
-            </div>
+            </div> */}
 
             {/* Delete Button */}
             <button
