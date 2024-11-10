@@ -30,18 +30,19 @@ const Feedposts = () => {
         posts.map((post) => (
           <div key={post._id} className="mb-8">
             {" "}
-            {/* Increased spacing between PostCards */}
-            <PostCard
-              profileImage={post.user.profilepicture} // Assuming the backend response includes user profileImage
-              name={post.user.name} // Backend response includes user name
-              bio={post.user.bio} // Backend response includes user headline
-              description={post.content} // Assuming this is the post content/description
-              postImage={post.image} // Assuming post has an image field
-              initialLikes={post.likes.length}
-              initialComments={post.comments.length} // Count of comments from the populated comments array
-              postId={post._id} // Unique post ID for interactions
-              commentsData={post.comments}
-            />
+            <Link to={`/explore/${post.user.username}`}>
+              <PostCard
+                profileImage={post.user.profilepicture} // Assuming the backend response includes user profileImage
+                name={post.user.name} // Backend response includes user name
+                bio={post.user.bio} // Backend response includes user headline
+                description={post.content} // Assuming this is the post content/description
+                postImage={post.image} // Assuming post has an image field
+                initialLikes={post.likes.length}
+                initialComments={post.comments.length} // Count of comments from the populated comments array
+                postId={post._id} // Unique post ID for interactions
+                commentsData={post.comments}
+              />
+            </Link>
           </div>
         ))
       ) : (
