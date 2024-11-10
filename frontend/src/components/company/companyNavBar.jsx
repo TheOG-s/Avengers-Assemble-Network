@@ -1,20 +1,51 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   FaUserCircle,
   FaSearch,
   FaClipboardList,
   FaPlusSquare,
+  FaSignOutAlt,
+  FaSignInAlt,
 } from "react-icons/fa";
+import axiosInstance from "../../../config/axios.js";
+import logo from "../../assests/logo.png"; 
 
 const Navbar = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (token) {
+          setIsLoggedIn(true);
+        }
+      } catch (error) {
+        console.error("Error checking login status:", error);
+      }
+    };
+    checkLoginStatus();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await axiosInstance.post("/company/logout");
+      localStorage.removeItem("token");
+      setIsLoggedIn(false);
+      navigate("/login");
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
+
   return (
     <nav className="bg-blue-600 shadow-lg">
       <div className="container mx-auto flex items-center justify-between p-4">
-        {/* Logo */}
         <div className="flex items-center text-white">
-          <Link to="/company/home" className="text-2xl font-bold">
-            MyCompany
+          <Link>
+            <img src={logo} alt="Company Logo" className="h-8 w-auto mr-2" />{" "}
           </Link>
         </div>
 
@@ -30,7 +61,6 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Navigation Links */}
         <div className="flex items-center space-x-6 text-white">
           <Link
             to="/company/showjobs"
@@ -53,6 +83,16 @@ const Navbar = () => {
             <FaUserCircle />
             <span>Update Profile</span>
           </Link>
+
+          {isLoggedIn ? (
+            <button onClick={handleLogout} className="hover:text-gray-300">
+              <FaSignOutAlt className="inline mr-1" /> Logout
+            </button>
+          ) : (
+            <Link to="/company/login" className="hover:text-gray-300">
+              <FaSignInAlt className="inline mr-1" /> Login
+            </Link>
+          )}
         </div>
       </div>
     </nav>

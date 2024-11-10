@@ -24,10 +24,10 @@ import CompanyJobs from "./pages/company/showjob";
 import CompanyPostJob from "./pages/company/postjob";
 import CompanyLogin from "./pages/company/login";
 import CompanyRegistration from "./pages/company/registercompany";
+import UpdateCompanyDetails from "./pages/company/updateprofile";
 
 const App = () => {
   const location = useLocation();
-
 
   const companyRoutes = [
     "/company/home",
@@ -40,7 +40,7 @@ const App = () => {
 
   return (
     <>
-      {/* Conditionally render NavBar or CompanyNavbar based on route */}
+     
       {companyRoutes.includes(location.pathname) ? (
         <CompanyNavbar />
       ) : (
@@ -67,6 +67,7 @@ const App = () => {
         <Route path="/company/postjob" element={<CompanyPostJob />} />
         <Route path="/company/login" element={<CompanyLogin />} />
         <Route path="/company/signup" element={<CompanyRegistration />} />
+        <Route path="/company/updateprofile" element={<UpdateCompanyDetails />}/>
       </Routes>
     </>
   );
