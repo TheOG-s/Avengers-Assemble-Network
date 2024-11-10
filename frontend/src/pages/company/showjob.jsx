@@ -15,7 +15,7 @@ const CompanyJobs = () => {
   // Function to fetch jobs
   const fetchJobs = async () => {
     try {
-      const response = await axiosInstance.get("/company/jobs");
+      const response = await axiosInstance.get("/company/showAll");
       if (response.data.success) {
         setJobs(response.data.jobs);
       } else {

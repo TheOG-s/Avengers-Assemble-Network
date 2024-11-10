@@ -38,7 +38,7 @@ const LoginPage = () => {
         });
         if (response.data.success) {
           toast.success("Login successful!");
-          navigate("/home");
+          navigate("/company/home");
         } else {
           toast.error(response.data.message || "Login failed");
         }

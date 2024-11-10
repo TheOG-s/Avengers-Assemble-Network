@@ -1,7 +1,7 @@
 import React from 'react'
 import Navbar from '../../components/company/companyNavBar'
 
-const home = () => {
+const companyhome = () => {
   return (
     <div>
       <Navbar/>
@@ -9,4 +9,4 @@ const home = () => {
   )
 }
 
-export default home
+export default companyhome

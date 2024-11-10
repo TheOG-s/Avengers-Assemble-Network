@@ -8,10 +8,6 @@ const CompanyRegistration = () => {
   const [formData, setFormData] = useState({
     companyName: "",
     email: "",
-    address: "",
-    phone: "",
-    website: "",
-    industryType: "",
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -23,7 +19,7 @@ const CompanyRegistration = () => {
 
   const validateForm = () => {
     const { companyName, email, password } = formData;
-    if (!companyName || !email   || !password) {
+    if (!companyName || !email || !password) {
       toast.error("Please fill in all required fields.");
       return false;
     }
@@ -35,20 +31,12 @@ const CompanyRegistration = () => {
     if (validateForm()) {
       try {
         const response = await axiosInstance.post(
-          "/company/register",
+          "/company/signup",
           formData
         );
         if (response.data.success) {
           toast.success("Company registered successfully!");
-          setFormData({
-            companyName: "",
-            email: "",
-            address: "",
-            phone: "",
-            website: "",
-            industryType: "",
-            password: "",
-          });
+          setFormData({ companyName: "", email: "", password: "" });
         } else {
           toast.error(response.data.message || "Failed to register company.");
         }
@@ -97,7 +85,7 @@ const CompanyRegistration = () => {
             />
           </div>
 
-      
+          {/* Password */}
           <div>
             <label className="block text-gray-700 font-semibold">
               Password<span className="text-red-500">*</span>
@@ -130,7 +118,6 @@ const CompanyRegistration = () => {
           </button>
         </form>
 
-        
         <p className="mt-4 text-sm text-center text-gray-600">
           Already have an account?{" "}
           <Link to="/company/login" className="text-blue-500 hover:underline">
