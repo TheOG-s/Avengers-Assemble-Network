@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PostCard from "./postcard.jsx";
 import axiosInstance from "../../config/axios";
-
+import { Link } from "react-router-dom";
 const Feedposts = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
