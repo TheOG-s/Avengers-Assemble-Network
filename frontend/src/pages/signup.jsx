@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../config/axios.js";
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import FontAwesome icons
+import { setToken,setUser } from "../slices/authSlice.js";
 
 const Signup = () => {
   const navigate = useNavigate();

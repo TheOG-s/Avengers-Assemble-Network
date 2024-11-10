@@ -4,9 +4,14 @@ import axiosInstance from "../../config/axios.js";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; 
+import { setToken, setUser } from "../slices/authSlice.js";
+import { useDispatch } from "react-redux";
+import Cookies from "universal-cookie";
 
 const Login = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -38,6 +43,14 @@ const Login = () => {
         });
         if (response.data.success) {
           toast.success("Login successful!");
+          console.log(response.data.user);
+          const cookies = new Cookies();
+          cookies.set("token", response.data.token);
+          cookies.set("user", response.data.user);
+          console.log(cookies.get("token"));
+          console.log(cookies.get("user"));
+          dispatch(setToken(response.data.token));
+          dispatch(setUser(response.data.user));
           navigate("/home");
         } else {
           toast.error(response.data.message || "Login failed");
@@ -47,6 +60,7 @@ const Login = () => {
           toast.error(error.response.data.message);
         } else {
           toast.error("An error occurred. Please try again.");
+          console.log(error.message);
         }
       }
     }

@@ -32,7 +32,7 @@ const loginUser = async (req, res) => {
       maxAge: 3 * 24 * 60 * 60 * 1000,
     });
 
-    res.json({ success: true, message: "Logged in successfully." });
+    res.json({ success: true,user,token, message: "Logged in successfully." });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
