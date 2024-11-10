@@ -1,7 +1,7 @@
 import postModel from "../models/postModel.js";
 import userModel from "../models/userModel.js";
 import { uploadOnCloudinary } from "../config/cloudinary.js";
-
+import { v2 as cloudinary } from "cloudinary";
 //get feed possts
 export const getFeedPosts = async (req, res) => {
   try {
@@ -65,25 +65,26 @@ export const createPost = async (req, res) => {
 
 // Get all posts
 
-export const getPostsById = async (req, res) => {
+export const getPostsByUsername = async (req, res) => {
   try {
-    const userId = req.params.userId; // User ID from the URL parameter, not req.user
-    //console.log(userId);
-
-    // Fetch posts where the `user` field matches `userId`
+    const username = req.params.username;
+    const user = await userModel.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
     const posts = await postModel
-      .find({ user: userId })
+      .find({ user: user._id })
       .populate("user", "name username profilePicture headline")
       .populate("comments.user", "name profilePicture username headline")
       .sort({ createdAt: -1 });
 
-    if (!posts) {
+    if (!posts || posts.length === 0) {
       return res.status(404).json({ message: "No posts found for this user" });
     }
 
-    res.status(200).json({ posts });
+    res.status(200).json({ success: true, posts });
   } catch (error) {
-    //console.log("Error in getPostsById controller:", error);
+    console.error("Error in getPostsByUsername controller:", error);
     res
       .status(500)
       .json({ message: "Error fetching posts", error: error.message });
@@ -145,7 +146,9 @@ export const deletePost = async (req, res) => {
       await cloudinary.uploader.destroy(post.imagePublicId);
     }
     await postModel.findByIdAndDelete(postId);
-    res.status(200).json({ message: "Post deleted successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Post deleted successfully" });
   } catch (error) {
     res
       .status(500)
@@ -217,6 +220,6 @@ export const addComment = async (req, res) => {
     });
   } catch (error) {
     console.error("Error adding comment:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };

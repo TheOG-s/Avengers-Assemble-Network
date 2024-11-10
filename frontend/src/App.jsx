@@ -40,7 +40,6 @@ const App = () => {
 
   return (
     <>
-     
       {companyRoutes.includes(location.pathname) ? (
         <CompanyNavbar />
       ) : (
@@ -50,6 +49,7 @@ const App = () => {
       <Routes>
         {/* User Routes */}
         <Route path="/" element={<Home />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/messages" element={<Messages />} />
@@ -67,7 +67,10 @@ const App = () => {
         <Route path="/company/postjob" element={<CompanyPostJob />} />
         <Route path="/company/login" element={<CompanyLogin />} />
         <Route path="/company/signup" element={<CompanyRegistration />} />
-        <Route path="/company/updateprofile" element={<UpdateCompanyDetails />}/>
+        <Route
+          path="/company/updateprofile"
+          element={<UpdateCompanyDetails />}
+        />
       </Routes>
     </>
   );

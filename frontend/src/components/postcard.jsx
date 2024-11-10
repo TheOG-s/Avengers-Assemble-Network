@@ -29,7 +29,7 @@ const PostCard = ({
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axiosInstance.get(`/posts/${postId}`);
+        const response = await axiosInstance.get(`/posts`);
         setHasLiked(response.data.hasLiked);
         setHasSaved(response.data.hasSaved);
         if (!commentsData || commentsData.length === 0) {
@@ -171,7 +171,6 @@ const PostCard = ({
               ))
             ) : (
               <p className="text-gray-500">No comments yet.</p>
-              
             )}
           </div>
 
