@@ -38,7 +38,7 @@ const PostJob = () => {
     if (validateForm()) {
       try {
         // Send form data without datePosted to backend
-        const response = await axiosInstance.post("/job/post", formData);
+        const response = await axiosInstance.post("/job/add", formData);
         if (response.data.success) {
           toast.success("Job posted successfully!");
           setFormData({

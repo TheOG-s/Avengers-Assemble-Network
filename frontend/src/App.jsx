@@ -25,6 +25,8 @@ import CompanyPostJob from "./pages/company/postjob";
 import CompanyLogin from "./pages/company/login";
 import CompanyRegistration from "./pages/company/registercompany";
 import UpdateCompanyDetails from "./pages/company/updateprofile";
+import CompanyProfile from "./pages/company/profile";
+import CompanyJobDetailsPage from "./pages/company/JobDetails";
 
 const App = () => {
   const location = useLocation();
@@ -36,6 +38,8 @@ const App = () => {
     "/company/updateprofile",
     "/company/login",
     "/company/signup",
+    "/company/profile",
+    "/company/:jobId",
   ];
 
   return (
@@ -58,7 +62,7 @@ const App = () => {
         <Route path="/jobs" element={<Jobs />} />
         <Route path="/updateprofile/:username" element={<UpdateProfile />} />
         <Route path="/connections" element={<Connections />} />
-        <Route path="/showjob" element={<JobDetailsPage />} />
+        <Route path="/showjob/:jobId" element={<JobDetailsPage />} />
         <Route path="/createpost" element={<CreatePostPage />} />
 
         {/* Company Routes */}
@@ -71,6 +75,8 @@ const App = () => {
           path="/company/updateprofile"
           element={<UpdateCompanyDetails />}
         />
+        <Route path="/company/profile" element={<CompanyProfile />} />
+        <Route path="/company/:jobId" element={<CompanyJobDetailsPage />} />
       </Routes>
     </>
   );

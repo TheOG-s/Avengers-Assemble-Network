@@ -5,6 +5,6 @@ import { exploreProfile, getSuggestedConnections } from "../controllers/exploreC
 const exploreRouter = express.Router();
 
 exploreRouter.get("/suggestions", protectUserRoute, getSuggestedConnections);
-exploreRouter.get("/:username", protectUserRoute, exploreProfile);
+exploreRouter.get("/:username", exploreProfile);
 
 export default exploreRouter;

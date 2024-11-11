@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import axiosInstance from "../../../config/axios.js";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -7,15 +8,18 @@ const CompanyJobs = () => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch jobs on component mount
   useEffect(() => {
     fetchJobs();
   }, []);
 
-  // Function to fetch jobs
   const fetchJobs = async () => {
     try {
-      const response = await axiosInstance.get("/company/showAll");
+      const company = await axiosInstance.get("/company/profile");
+      // console.log(company.data);
+      const response = await axiosInstance.get(
+        `/job/showall/${company.data._id}`
+      );
+      // console.log(response);
       if (response.data.success) {
         setJobs(response.data.jobs);
       } else {
@@ -25,22 +29,6 @@ const CompanyJobs = () => {
       toast.error("Error loading jobs. Please try again later.");
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Function to delete a job
-  const deleteJob = async (jobId) => {
-    try {
-      const response = await axiosInstance.delete(`/company/jobs/${jobId}`);
-      if (response.data.success) {
-        toast.success("Job deleted successfully.");
-        // Remove the deleted job from the state
-        setJobs(jobs.filter((job) => job._id !== jobId));
-      } else {
-        toast.error("Failed to delete job.");
-      }
-    } catch (error) {
-      toast.error("Error deleting job. Please try again later.");
     }
   };
 
@@ -58,7 +46,11 @@ const CompanyJobs = () => {
       ) : (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {jobs.map((job) => (
-            <div key={job._id} className="p-6 bg-white rounded-lg shadow-md">
+            <Link
+              to={`/company/${job._id}`}
+              key={job._id}
+              className="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200"
+            >
               <h2 className="text-xl font-semibold text-gray-800">
                 {job.jobTitle}
               </h2>
@@ -68,15 +60,7 @@ const CompanyJobs = () => {
               <p className="text-gray-500 mt-2">
                 Posted on: {new Date(job.datePosted).toLocaleDateString()}
               </p>
-
-              {/* Delete Button */}
-              <button
-                onClick={() => deleteJob(job._id)}
-                className="mt-4 px-4 py-2 text-white bg-red-500 rounded-md hover:bg-red-600 focus:outline-none"
-              >
-                Delete
-              </button>
-            </div>
+            </Link>
           ))}
         </div>
       )}
