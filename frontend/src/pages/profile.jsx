@@ -3,6 +3,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../../config/axios.js";
 import UsersPost from "../components/userposts.jsx";
 
+const formatDate = (date) => {
+  return new Date(date).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+};
 const ProfilePage = () => {
   const [user, setUser] = useState({});
   const [loading, setLoading] = useState(false);
@@ -85,38 +92,44 @@ const ProfilePage = () => {
       <div className="mt-8 bg-gray-50 p-4 rounded-lg shadow">
         <h3 className="text-xl font-semibold text-gray-800">Experience</h3>
         {user.experience && user.experience.length > 0 ? (
-          user.experience.map((exp, index) => (
-            <div key={index} className="mt-4">
-              <h4 className="text-lg font-semibold">
-                {exp.title} at {exp.company}
-              </h4>
-              <p className="text-gray-500">
-                {exp.startDate} - {exp.endDate || "Present"}
-              </p>
-              <p className="text-gray-600 mt-1">{exp.description}</p>
-            </div>
-          ))
+          user.experience
+            .sort((a, b) => new Date(b.startDate) - new Date(a.startDate))
+            .map((exp, index) => (
+              <div key={index} className="mt-4">
+                <h4 className="text-lg font-semibold">
+                  {exp.title} at {exp.company}
+                </h4>
+                <p className="text-gray-500">
+                  {formatDate(exp.startDate)} -{" "}
+                  {formatDate(exp.endDate) || "Present"}
+                </p>
+                <p className="text-gray-600 mt-1">{exp.description}</p>
+              </div>
+            ))
         ) : (
           <p className="text-gray-600">No experience listed.</p>
         )}
       </div>
 
-      {/* Projects */}
+      {/* project */}
       <hr className="my-8 border-gray-300" />
       <div className="mt-8 bg-gray-50 p-4 rounded-lg shadow">
-        <h3 className="text-xl font-semibold text-gray-800">Projects</h3>
-        {user.projects && user.projects.length > 0 ? (
-          user.projects.map((project, index) => (
-            <div key={index} className="mt-4">
-              <h4 className="text-lg font-semibold">{project.title}</h4>
-              <p className="text-gray-500">
-                {project.startDate} - {project.endDate || "Ongoing"}
-              </p>
-              <p className="text-gray-600 mt-1">{project.description}</p>
-            </div>
-          ))
+        <h3 className="text-xl font-semibold text-gray-800">project</h3>
+        {user.project && user.project.length > 0 ? (
+          user.project
+            .sort((a, b) => new Date(b.startDate) - new Date(a.startDate))
+            .map((project, index) => (
+              <div key={index} className="mt-4">
+                <h4 className="text-lg font-semibold">{project.title}</h4>
+                <p className="text-gray-500">
+                  {formatDate(project.startDate)} -{" "}
+                  {formatDate(project.endDate) || "Present"}
+                </p>
+                <p className="text-gray-600 mt-1">{project.description}</p>
+              </div>
+            ))
         ) : (
-          <p className="text-gray-600">No projects listed.</p>
+          <p className="text-gray-600">No project listed.</p>
         )}
       </div>
 
@@ -125,15 +138,17 @@ const ProfilePage = () => {
       <div className="mt-8 bg-gray-50 p-4 rounded-lg shadow">
         <h3 className="text-xl font-semibold text-gray-800">Education</h3>
         {user.education && user.education.length > 0 ? (
-          user.education.map((edu, index) => (
-            <div key={index} className="mt-4">
-              <h4 className="text-lg font-semibold">{edu.instituteName}</h4>
-              <p className="text-gray-500">
-                {edu.fieldOfStudy} ({edu.startYear} - {edu.endYear || "Present"}
-                )
-              </p>
-            </div>
-          ))
+          user.education
+            .sort((a, b) => new Date(b.startYear) - new Date(a.startYear))
+            .map((edu, index) => (
+              <div key={index} className="mt-4">
+                <h4 className="text-lg font-semibold">{edu.instituteName}</h4>
+                <p className="text-gray-500">
+                  {edu.fieldOfStudy} ({edu.startYear} -{" "}
+                  {edu.endYear || "Present"})
+                </p>
+              </div>
+            ))
         ) : (
           <p className="text-gray-600">No education listed.</p>
         )}

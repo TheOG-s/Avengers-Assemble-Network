@@ -19,7 +19,7 @@ const UpdateProfilePage = () => {
     experience: [
       { title: "", company: "", startDate: "", endDate: "", description: "" },
     ],
-    projects: [{ title: "", startDate: "", endDate: "", description: "" }],
+    project: [{ title: "", startDate: "", endDate: "", description: "" }],
     education: [
       { instituteName: "", fieldOfStudy: "", startYear: "", endYear: "" },
     ],
@@ -46,7 +46,7 @@ const UpdateProfilePage = () => {
               description: "",
             },
           ],
-          projects: userData.projects || [
+          project: userData.project || [
             { title: "", startDate: "", endDate: "", description: "" },
           ],
           education: userData.education || [
@@ -103,8 +103,8 @@ const UpdateProfilePage = () => {
   };
 
   const addNewEntry = (arrayName) => {
-    const currentEntries = formData[arrayName];
-    const lastEntry = currentEntries[currentEntries.length - 1];
+    const currentEntries = formData[arrayName] || [];
+    const lastEntry = currentEntries[currentEntries.length - 1] || {};
 
     // Check if the last entry is complete before adding a new one
     const isComplete =
@@ -113,7 +113,7 @@ const UpdateProfilePage = () => {
         lastEntry.company &&
         lastEntry.startDate &&
         lastEntry.description) ||
-      (arrayName === "projects" &&
+      (arrayName === "project" &&
         lastEntry.title &&
         lastEntry.startDate &&
         lastEntry.description) ||
@@ -133,7 +133,7 @@ const UpdateProfilePage = () => {
               endDate: "",
               description: "",
             }
-          : arrayName === "projects"
+          : arrayName === "project"
           ? { title: "", startDate: "", endDate: "", description: "" }
           : { instituteName: "", fieldOfStudy: "", startYear: "", endYear: "" };
 
@@ -153,8 +153,12 @@ const UpdateProfilePage = () => {
 
     try {
       // Send updated profile data to backend
-      const response = await axiosInstance.put("/user/updateprofile", formData);
-      console.log(response);
+      const transformedData = {
+        ...formData,
+        skills: formData.skills.split(",").map((skill) => skill.trim()),
+      };
+      await axiosInstance.put("/user/updateprofile", transformedData);
+      console.log(transformedData);
       toast.success("Profile updated successfully!");
       //navigate(`/explore/${userData.username}`); // Navigate back to profile page after successful update
     } catch (error) {
@@ -249,7 +253,7 @@ const UpdateProfilePage = () => {
           {formData.experience.map((exp, index) => (
             <div key={index} className="mb-4">
               <input
-                type="text"
+                type="String"
                 name="title"
                 placeholder="Job Title"
                 value={exp.title}
@@ -257,7 +261,7 @@ const UpdateProfilePage = () => {
                 className="w-full p-2 mb-2 border border-gray-300 rounded"
               />
               <input
-                type="text"
+                type="String"
                 name="company"
                 placeholder="Company"
                 value={exp.company}
@@ -265,18 +269,18 @@ const UpdateProfilePage = () => {
                 className="w-full p-2 mb-2 border border-gray-300 rounded"
               />
               <input
-                type="text"
+                type="Date"
                 name="startDate"
                 placeholder="Start Date"
-                value={exp.startDate}
+                value={exp.startDate.split("T")[0]}
                 onChange={(e) => handleArrayChange(e, "experience", index)}
                 className="w-full p-2 mb-2 border border-gray-300 rounded"
               />
               <input
-                type="text"
+                type="Date"
                 name="endDate"
                 placeholder="End Date"
-                value={exp.endDate}
+                value={exp.endDate.split("T")[0]}
                 onChange={(e) => handleArrayChange(e, "experience", index)}
                 className="w-full p-2 mb-2 border border-gray-300 rounded"
               />
@@ -305,54 +309,55 @@ const UpdateProfilePage = () => {
           </button>
         </div>
 
-        {/* Projects Section */}
+        {/* project Section */}
         <div className="border p-4 rounded-lg bg-gray-50 shadow">
-          <label className="block text-gray-700">Projects</label>
-          {formData.projects.map((project, index) => (
-            <div key={index} className="mb-4">
-              <input
-                type="text"
-                name="title"
-                placeholder="Project Title"
-                value={project.title}
-                onChange={(e) => handleArrayChange(e, "projects", index)}
-                className="w-full p-2 mb-2 border border-gray-300 rounded"
-              />
-              <input
-                type="text"
-                name="startDate"
-                placeholder="Start Date"
-                value={project.startDate}
-                onChange={(e) => handleArrayChange(e, "projects", index)}
-                className="w-full p-2 mb-2 border border-gray-300 rounded"
-              />
-              <input
-                type="text"
-                name="endDate"
-                placeholder="End Date"
-                value={project.endDate}
-                onChange={(e) => handleArrayChange(e, "projects", index)}
-                className="w-full p-2 mb-2 border border-gray-300 rounded"
-              />
-              <textarea
-                name="description"
-                placeholder="Description"
-                value={project.description}
-                onChange={(e) => handleArrayChange(e, "projects", index)}
-                className="w-full p-2 mb-2 border border-gray-300 rounded"
-              />
-              <button
-                type="button"
-                onClick={() => removeEntry("projects", index)}
-                className="bg-red-500 text-white p-2 rounded mt-2"
-              >
-                Remove
-              </button>
-            </div>
-          ))}
+          <label className="block text-gray-700">project</label>
+          {formData.project.length > 0 &&
+            formData.project.map((project, index) => (
+              <div key={index} className="mb-4">
+                <input
+                  type="String"
+                  name="title"
+                  placeholder="Project Title"
+                  value={project.title}
+                  onChange={(e) => handleArrayChange(e, "project", index)}
+                  className="w-full p-2 mb-2 border border-gray-300 rounded"
+                />
+                <input
+                  type="Date"
+                  name="startDate"
+                  placeholder="Start Date"
+                  value={project.startDate.split("T")[0]}
+                  onChange={(e) => handleArrayChange(e, "project", index)}
+                  className="w-full p-2 mb-2 border border-gray-300 rounded"
+                />
+                <input
+                  type="Date"
+                  name="endDate"
+                  placeholder="End Date"
+                  value={project.endDate.split("T")[0]}
+                  onChange={(e) => handleArrayChange(e, "project", index)}
+                  className="w-full p-2 mb-2 border border-gray-300 rounded"
+                />
+                <textarea
+                  name="description"
+                  placeholder="Description"
+                  value={project.description}
+                  onChange={(e) => handleArrayChange(e, "project", index)}
+                  className="w-full p-2 mb-2 border border-gray-300 rounded"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeEntry("project", index)}
+                  className="bg-red-500 text-white p-2 rounded mt-2"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
           <button
             type="button"
-            onClick={() => addNewEntry("projects")}
+            onClick={() => addNewEntry("project")}
             className="bg-blue-500 text-white p-2 rounded mt-2"
           >
             Add Project
