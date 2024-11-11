@@ -5,7 +5,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 //const { username } = useParams();
- 
+
 import axiosInstance from "../../config/axios";
 
 const UpdateProfilePage = () => {
@@ -76,10 +76,10 @@ const UpdateProfilePage = () => {
       reader.onloadend = () => {
         setFormData((prevData) => ({
           ...prevData,
-          [field]: reader.result,
+          [field]: reader.result, // Set as Base64 string
         }));
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(file); // Convert file to Base64
     }
   };
 
@@ -153,11 +153,12 @@ const UpdateProfilePage = () => {
 
     try {
       // Send updated profile data to backend
-      await axiosInstance.put("/user/updateprofile", formData);
+      const response = await axiosInstance.put("/user/updateprofile", formData);
+      console.log(response);
       toast.success("Profile updated successfully!");
       //navigate(`/explore/${userData.username}`); // Navigate back to profile page after successful update
     } catch (error) {
-      console.error("Error updating profile", error);
+      console.error("Error updating profile", error.message);
       toast.error("Error updating profile");
     }
   };

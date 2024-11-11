@@ -15,7 +15,7 @@ const uploadOnCloudinary = async (localFilePath) => {
     if (!localFilePath) return null;
     //console.log("yha aarha hu mai");
     // upload file on cloudinary
-    const response = await cloudinary.uploader.upload(localFilePath, {
+    const response = await cloudinary.uploader.upload(base64Data, {
       resource_type: "auto",
     });
     // file has been successfuly uploaded

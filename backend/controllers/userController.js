@@ -3,7 +3,7 @@ import validator from "validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { uploadOnCloudinary } from "../config/cloudinary.js";
-
+import { v2 as cloudinary } from "cloudinary";
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET_KEY, { expiresIn: "3d" });
 };
@@ -32,7 +32,12 @@ const loginUser = async (req, res) => {
       maxAge: 3 * 24 * 60 * 60 * 1000,
     });
 
-    res.json({ success: true,user,token, message: "Logged in successfully." });
+    res.json({
+      success: true,
+      user,
+      token,
+      message: "Logged in successfully.",
+    });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
@@ -128,37 +133,44 @@ const updateProfile = async (req, res) => {
 
     const updatedDetails = {};
 
+    // Loop through each updatable field and add it to updatedDetails if present in the request body
     for (const detail of updatableDetails) {
       if (req.body[detail]) {
         updatedDetails[detail] = req.body[detail];
       }
     }
+    //console.log(req.body);
+    // Upload profilePicture if provided
+    if (req.body.profilePicture) {
+      const uploadResult = await cloudinary.uploader.upload(
+        req.body.profilePicture
+      );
+      if (uploadResult) {
+        updatedDetails.profilePicture = uploadResult.secure_url;
+      }
+    }
 
-    // Not tested this part.
-    // H-A-R-I-O-M check this with frontend
-
-    // if (req.body.profilePicture) {
-    //   const uploadResult = await uploadOnCloudinary(req.body.profilePicture);
-    //   if (uploadResult) {
-    //     updatedDetails.profilePicture = uploadResult.secure_url;
-    //   }
-    // }
-
-    // if (req.body.coverPhoto) {
-    //   const uploadResult = await uploadOnCloudinary(req.body.coverPhoto);
-    //   if (uploadResult) {
-    //     updatedDetails.coverPhoto = uploadResult.secure_url;
-    //   }
-    // }
-
+    //Upload coverPhoto if provided
+    if (req.body.coverPhoto) {
+      const uploadResult = await cloudinary.uploader.upload(
+        req.body.coverPhoto
+      );
+      if (uploadResult) {
+        updatedDetails.coverPhoto = uploadResult.secure_url;
+      }
+    }
     const user = await userModel
       .findByIdAndUpdate(req.user._id, { $set: updatedDetails }, { new: true })
       .select("-password");
-
-    res.json(user);
+    // console.log(user);
+    res.json({ success: true, user });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    console.error("Error in updateProfile:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error updating profile",
+      error: error.message,
+    });
   }
 };
 
