@@ -3,7 +3,7 @@ import { FaHeart, FaBookmark, FaComment } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import axiosInstance from "../../config/axios";
 import "react-toastify/dist/ReactToastify.css";
-
+import { Link } from "react-router-dom";
 const PostCard = ({
   profilePicture,
   name,
@@ -15,6 +15,7 @@ const PostCard = ({
   initialSaves,
   postId,
   commentsData,
+  username,
 }) => {
   const [likes, setLikes] = useState(initialLikes || 0);
   const [comments, setComments] = useState(initialComments || 0);
@@ -101,9 +102,12 @@ const PostCard = ({
           className="w-14 h-14 rounded-full object-cover mr-4 shadow-sm border border-gray-300"
         />
         <div>
-          <h2 className="font-semibold text-gray-900 text-lg">
+          <Link
+            to={`/explore/${username}`}
+            className="font-semibold text-gray-900 text-lg"
+          >
             {name || "Unknown User"}
-          </h2>
+          </Link>
           <p className="text-sm text-gray-500">{bio || "No bio provided"}</p>
         </div>
       </div>

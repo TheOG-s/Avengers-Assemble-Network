@@ -30,7 +30,6 @@ const Feedposts = () => {
         posts.map((post) => (
           <div key={post._id} className="mb-8">
             {" "}
-            <Link to={`/explore/${post.user.username}`}>
               <PostCard
                 profileImage={post.user.profilepicture} // Assuming the backend response includes user profileImage
                 name={post.user.name} // Backend response includes user name
@@ -41,8 +40,8 @@ const Feedposts = () => {
                 initialComments={post.comments.length} // Count of comments from the populated comments array
                 postId={post._id} // Unique post ID for interactions
                 commentsData={post.comments}
+                username={post.user.username}
               />
-            </Link>
           </div>
         ))
       ) : (
