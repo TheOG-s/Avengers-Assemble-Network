@@ -10,7 +10,7 @@ const Feedposts = () => {
     setLoading(true);
     try {
       const response = await axiosInstance.get("/posts");
-      setPosts(response.data); // Set the posts array
+      setPosts(response.data); 
     } catch (error) {
       console.error("Error fetching posts:", error);
     } finally {

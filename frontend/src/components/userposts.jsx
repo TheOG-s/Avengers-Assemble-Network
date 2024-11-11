@@ -51,32 +51,36 @@ const UsersPost = ({ username }) => {
   }
 
   return (
-    <div className="mt-8 bg-gray-50 p-4 rounded-lg shadow">
+    <div className="mt-5 bg-gray-50 p-3 rounded-lg shadow max-w-full mx-auto">
       <ToastContainer />
-      <h3 className="text-xl font-semibold text-gray-800">User's Posts</h3>
-      {posts.length > 0 ? (
-        posts.map((post, index) => (
-          <div key={index} className="mt-4 p-4 bg-white rounded-lg shadow-sm">
-            <h4 className="text-lg font-semibold">{post.title}</h4>
-            <p className="text-gray-600 mt-2">{post.content}</p>
-            {post.image && (
-              <img
-                src={post.image}
-                alt="Post visual"
-                className="mt-4 max-w-full h-auto rounded-lg shadow-md"
-              />
-            )}
-            <p className="text-gray-500 text-sm mt-2">
-              Posted on: {new Date(post.createdAt).toLocaleDateString()}
-            </p>
+      <h3 className="text-lg font-semibold text-gray-800">User's Posts</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        {posts.length > 0 ? (
+          posts.map((post, index) => (
+            <div key={index} className="mt-4 p-3 bg-white rounded-lg shadow-sm">
+              <h4 className="text-md font-semibold">{post.title}</h4>
+              <p className="text-gray-600 mt-2 text-sm">{post.content}</p>
 
-            {/* Display Likes */}
-            <div className="mt-2 text-gray-500">
-              <strong>Likes:</strong> {post.likes.length}
-            </div>
+              {post.image && (
+                <div className="mt-3 w-1/3 h-40 overflow-hidden rounded-lg shadow-md">
+                  <img
+                    src={post.image}
+                    alt="Post visual"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+              <p className="text-gray-500 text-xs mt-1">
+                Posted on: {new Date(post.createdAt).toLocaleDateString()}
+              </p>
 
-            {/* Display Comments */}
-            {/* <div className="mt-2">
+              {/* Display Likes */}
+              <div className="mt-1 text-gray-500 text-xs">
+                <strong>Likes:</strong> {post.likes.length}
+              </div>
+
+              {/* Display Comments */}
+              {/* <div className="mt-2">
               <strong>Comments:</strong>
               {post.comments.length > 0 ? (
                 post.comments.map((comment, idx) => (
@@ -92,18 +96,19 @@ const UsersPost = ({ username }) => {
               )}
             </div> */}
 
-            {/* Delete Button */}
-            <button
-              onClick={() => handleDeletePost(post._id)}
-              className="mt-4 bg-red-500 text-white py-1 px-3 rounded-lg hover:bg-red-600"
-            >
-              Delete Post
-            </button>
-          </div>
-        ))
-      ) : (
-        <p className="text-gray-600">No posts available.</p>
-      )}
+              {/* Delete Button */}
+              <button
+                onClick={() => handleDeletePost(post._id)}
+                className="mt-3 bg-red-500 text-white py-1 px-2 text-xs rounded-lg hover:bg-red-600"
+              >
+                Delete Post
+              </button>
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-600">No posts available.</p>
+        )}
+      </div>
     </div>
   );
 };
