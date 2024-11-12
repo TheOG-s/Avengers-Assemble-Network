@@ -5,7 +5,7 @@ import { v2 as cloudinary } from "cloudinary";
 //get feed possts
 
 export const getFeedPosts = async (req, res) => {
-  const { page = 1, limit = 0 } = req.query; // Default to page 1 and limit 10
+  const { page = 1, limit = 30 } = req.query; // Default to page 1 and limit 10
   try {
     //console.log(req.user);
     const posts = await postModel
