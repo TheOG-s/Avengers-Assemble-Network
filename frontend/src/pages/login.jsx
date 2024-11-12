@@ -122,6 +122,13 @@ const Login = () => {
             Login
           </button>
         </form>
+        <button
+          type="button"
+          onClick={() => navigate("/company/login")}
+          className="w-full px-4 py-2 mt-3 text-white bg-gray-500 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+        >
+          Company Account Login
+        </button>
 
         <p className="mt-4 text-sm text-center text-gray-600">
           Don't have an account?{" "}

@@ -32,15 +32,16 @@ import SearchBar from "./components/searchbar";
 
 // Page Not Found
 import NotFound from "./pages/notFound"; // You can create a simple 404 component
+import JobsApplied from "./pages/jobsapplied";
 
 const App = () => {
   const location = useLocation();
   const { user } = useSelector((state) => state.auth); // Get user from Redux state
 
   // Check if the user is an authenticated company user
-  const isCompanyRoute = location.pathname.includes("/company");
+ 
   const isUserCompany = user?.role === "user"; // Assuming role is set in user object
-
+ const isCompanyRoute = location.pathname.startsWith("/company");
   const companyRoutes = [
     "/company/home",
     "/company/showjobs",
@@ -95,6 +96,10 @@ const App = () => {
         <Route
           path="/updateprofile"
           element={user ? <UpdateProfile /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/jobsapplied"
+          element={user ? <JobsApplied /> : <Navigate to="/login" replace />}
         />
         <Route
           path="/search"

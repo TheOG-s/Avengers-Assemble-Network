@@ -10,6 +10,7 @@ import {
   FaSignOutAlt,
   FaSignInAlt,
   FaPlusCircle,
+  FaClipboardList,
 } from "react-icons/fa";
 
 const NavLinks = ({ handleLogout }) => {
@@ -30,7 +31,7 @@ const NavLinks = ({ handleLogout }) => {
           <FaHome className="inline mr-1" /> Home
         </NavLink>
       )}
-      
+
       {user && (
         <>
           <NavLink
@@ -78,6 +79,13 @@ const NavLinks = ({ handleLogout }) => {
                   onClick={() => setDropdownOpen(false)}
                 >
                   <FaEdit className="inline mr-1" /> Edit Profile
+                </NavLink>
+                <NavLink
+                  to="/jobsapplied"
+                  className="block px-4 py-2 text-gray-600 hover:text-blue-500"
+                  onClick={() => setDropdownOpen(false)}
+                >
+                  <FaClipboardList className="inline mr-1" /> Jobs Applied
                 </NavLink>
                 <NavLink
                   to="/createpost"
