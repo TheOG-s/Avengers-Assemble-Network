@@ -5,9 +5,9 @@ import { v2 as cloudinary } from "cloudinary";
 //get feed possts
 export const getFeedPosts = async (req, res) => {
   try {
-    //console.log(req.user.connections);
+    console.log(req.user);
     const posts = await postModel
-      .find({ user: { $in: req.user.connections } })
+      .find({ user: { $in: req.user } })
       .populate("user", "name username profilePicture bio")
       .populate("comments.user", "name profilePicture")
       // .select("content image likes comments")
@@ -64,6 +64,22 @@ export const createPost = async (req, res) => {
 };
 
 // Get all posts
+export const getAllPosts = async (req, res) => {
+  try {
+    //console.log(req.user.connections);
+    const posts = await postModel
+      .find({ user: { $in: req.user.connections } })
+      .populate("user", "name username profilePicture bio")
+      .populate("comments.user", "name profilePicture")
+      // .select("content image likes comments")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(posts);
+  } catch (error) {
+    //console.log("error in getfeedposts controller: ", error);
+    res.status(500).json({ message: "server error" });
+  }
+};
 
 export const getPostsByUsername = async (req, res) => {
   try {
@@ -78,9 +94,9 @@ export const getPostsByUsername = async (req, res) => {
       .populate("comments.user", "name profilePicture username headline")
       .sort({ createdAt: -1 });
 
-    if (!posts || posts.length === 0) {
-      return res.status(404).json({ message: "No posts found for this user" });
-    }
+    // if (!posts || posts.length === 0) {
+    //   return res.status(404).json({ message: "No posts found for this user" });
+    // }
 
     res.status(200).json({ success: true, posts });
   } catch (error) {

@@ -3,12 +3,15 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useSelector } from "react-redux";
 
 //const { username } = useParams();
 
-import axiosInstance from "../../config/axios";
+import axiosInstance from "../../config/axios.js";
+
 
 const UpdateProfilePage = () => {
+  const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -28,16 +31,13 @@ const UpdateProfilePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axiosInstance.get("/user/profile");
-        const userData = response.data;
-
         setFormData({
-          name: userData.name || "",
-          bio: userData.bio || "",
-          profilePicture: userData.profilePicture || "",
-          coverPhoto: userData.coverPhoto || "",
-          skills: userData.skills ? userData.skills.join(", ") : "",
-          experience: userData.experience || [
+          name: user.name || "",
+          bio: user.bio || "",
+          profilePicture: user.profilePicture || "",
+          coverPhoto: user.coverPhoto || "",
+          skills: user.skills ? user.skills.join(", ") : "",
+          experience: user.experience || [
             {
               title: "",
               company: "",
@@ -46,10 +46,10 @@ const UpdateProfilePage = () => {
               description: "",
             },
           ],
-          project: userData.project || [
+          project: user.project || [
             { title: "", startDate: "", endDate: "", description: "" },
           ],
-          education: userData.education || [
+          education: user.education || [
             { instituteName: "", fieldOfStudy: "", startYear: "", endYear: "" },
           ],
         });
@@ -80,8 +80,14 @@ const UpdateProfilePage = () => {
         }));
       };
       reader.readAsDataURL(file); // Convert file to Base64
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [field]: "", // Clear field if no file is selected
+      }));
     }
   };
+  
 
   const handleArrayChange = (e, arrayName, index) => {
     const { name, value } = e.target;
@@ -160,7 +166,7 @@ const UpdateProfilePage = () => {
       await axiosInstance.put("/user/updateprofile", transformedData);
       console.log(transformedData);
       toast.success("Profile updated successfully!");
-      //navigate(`/explore/${userData.username}`); // Navigate back to profile page after successful update
+      navigate(`/explore/${user.username}`);
     } catch (error) {
       console.error("Error updating profile", error.message);
       toast.error("Error updating profile");
@@ -229,7 +235,6 @@ const UpdateProfilePage = () => {
             value={formData.bio}
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded"
-            required
           />
         </div>
 
@@ -243,7 +248,6 @@ const UpdateProfilePage = () => {
             value={formData.skills}
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded"
-            required
           />
         </div>
 

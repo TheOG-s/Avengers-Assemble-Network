@@ -6,25 +6,33 @@ import NavLinks from "./navlink.jsx";
 import MobileMenu from "./mobilemenu.jsx";
 import axiosInstance from "../../config/axios.js";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { clearUser } from "../slices/authSlice.js";
+
 
 const NavBar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate(); // Initialize the navigate function
 
+  const dispatch = useDispatch();
+
   const handleLogout = async () => {
     try {
       await axiosInstance.post("/user/logout");
+      dispatch(clearUser());
+      
       console.log("User logged out successfully.");
-      navigate("/login"); 
+      
+      navigate("/login");
     } catch (error) {
-      console.log(error);
+      console.log("Logout error:", error);
     }
   };
 
   return (
     <nav className="bg-white shadow-lg">
       <div className="container mx-auto px-4 py-2 flex justify-between items-center">
-         <Logo />
+        <Logo />
         <SearchBar />
 
         {/* Links for Desktop */}

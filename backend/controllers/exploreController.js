@@ -30,14 +30,13 @@ const exploreProfile = async (req, res) => {
       .select("-password");
 
     if (!user) {
-      console.log(error);
-      res.json({ success: false, message: "User not found." });
+      return res.status(404).json({ success: false, message: "User not found." });
     }
 
-    res.json(user);
+    res.status(200).json(user);
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error. Please try again later." });
   }
 };
 

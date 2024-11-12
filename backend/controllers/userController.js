@@ -106,6 +106,7 @@ const signupUser = async (req, res) => {
 
 const logoutUser = async (req, res) => {
   res.clearCookie("token");
+  res.clearCookie("user");
   res.json({ success: true, message: "User logged out succesfully." });
 };
 
@@ -139,9 +140,10 @@ const updateProfile = async (req, res) => {
         updatedDetails[detail] = req.body[detail];
       }
     }
-    //console.log(req.body);
+    // console.log(req.body);
     // Upload profilePicture if provided
     if (req.body.profilePicture) {
+      // console.log("hehe")
       const uploadResult = await cloudinary.uploader.upload(
         req.body.profilePicture
       );

@@ -2,11 +2,15 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../../config/axios.js";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useDispatch, useSelector } from "react-redux"; // Importing Redux hooks
 
 const UsersPost = ({ username }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Fetch the current user data from Redux store
+  const currentUser = useSelector((state) => state.auth.user); // Assuming the current user's data is stored under 'auth.user'
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -20,7 +24,7 @@ const UsersPost = ({ username }) => {
           toast.error("Failed to load posts.");
         }
       } catch (error) {
-        toast.error("Error fetching posts. Please try again.");
+        // toast.error("Error fetching posts. Please try again.");
         console.error("Error fetching posts:", error);
       } finally {
         setLoading(false);
@@ -32,7 +36,6 @@ const UsersPost = ({ username }) => {
 
   const handleDeletePost = async (postId) => {
     try {
-      console.log(postId);
       const response = await axiosInstance.delete(`/posts/${postId}`);
       if (response.data.success) {
         toast.success("Post deleted successfully");
@@ -93,20 +96,21 @@ const UsersPost = ({ username }) => {
                 ))
               ) : (
                 <p className="text-gray-600">No comments yet.</p>
-              )}
+              )} 
             </div> */}
 
-              {/* Delete Button */}
-              <button
-                onClick={() => handleDeletePost(post._id)}
-                className="mt-3 bg-red-500 text-white py-1 px-2 text-xs rounded-lg hover:bg-red-600"
-              >
-                Delete Post
-              </button>
+              {currentUser && currentUser.username === username && (
+                <button
+                  onClick={() => handleDeletePost(post._id)}
+                  className="mt-3 bg-red-500 text-white py-1 px-2 text-xs rounded-lg hover:bg-red-600"
+                >
+                  Delete Post
+                </button>
+              )}
             </div>
           ))
         ) : (
-          <p className="text-gray-600">No posts available.</p>
+          <p className="text-gray-600">No posts from this user.</p>
         )}
       </div>
     </div>

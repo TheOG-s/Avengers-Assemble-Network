@@ -10,6 +10,7 @@ const formatDate = (date) => {
     year: "numeric",
   });
 };
+
 const ProfilePage = () => {
   const [user, setUser] = useState({});
   const [loading, setLoading] = useState(false);
@@ -24,10 +25,16 @@ const ProfilePage = () => {
       setError("");
       try {
         const response = await axiosInstance.get(`/explore/${username}`);
-        setUser(response.data);
+        if (response.status === 200) {
+          setUser(response.data);
+        }
       } catch (error) {
-        setError("Error fetching user profile.");
-        console.error("Error fetching user profile:", error);
+        if (error.response && error.response.status === 404) {
+          setError("User not found.");
+        } else {
+          setError("Error fetching user profile.");
+        }
+        // console.error("Error fetching user profile:", error);
       } finally {
         setLoading(false);
       }
@@ -40,10 +47,12 @@ const ProfilePage = () => {
     return <div className="text-center">Loading...</div>;
   }
 
+  if (error) {
+    return <div className="text-center text-red-600">{error}</div>;
+  }
+
   return (
     <div className="max-w-4xl mx-auto p-4">
-      {error && <p className="text-red-600">{error}</p>}
-
       {/* Cover and Profile Image */}
       <div className="relative">
         <img
@@ -111,10 +120,10 @@ const ProfilePage = () => {
         )}
       </div>
 
-      {/* project */}
+      {/* Project */}
       <hr className="my-8 border-gray-300" />
       <div className="mt-8 bg-gray-50 p-4 rounded-lg shadow">
-        <h3 className="text-xl font-semibold text-gray-800">project</h3>
+        <h3 className="text-xl font-semibold text-gray-800">Project</h3>
         {user.project && user.project.length > 0 ? (
           user.project
             .sort((a, b) => new Date(b.startDate) - new Date(a.startDate))
@@ -155,8 +164,12 @@ const ProfilePage = () => {
       </div>
 
       {/* User's Posts Section */}
-      <hr className="my-8 border-gray-300" />
-      <UsersPost username={username} />
+      {!error && (
+        <>
+          <hr className="my-8 border-gray-300" />
+          <UsersPost username={username} />
+        </>
+      )}
     </div>
   );
 };
