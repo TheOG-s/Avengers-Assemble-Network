@@ -317,7 +317,7 @@ const showApplicants = async (req, res) => {
 
     const job = await jobModel.findById(jobId).populate({
       path: "applicants",
-      select: "name email",
+      select: "name username email",
     });
 
     if (!job) {

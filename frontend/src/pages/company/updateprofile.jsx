@@ -1,105 +1,137 @@
-import React, { useState } from "react";
-import axiosInstance from "../../../config/axios.js";
-import { ToastContainer, toast } from "react-toastify";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axiosInstance from "../../../config/axios.js";
+
 
 const UpdateCompanyDetails = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    description: "",
+    profilePicture: "",
+    coverPhoto: "",
+    description: ""
   });
-  const [profilePhoto, setProfilePhoto] = useState(null);
-  const [coverPhoto, setCoverPhoto] = useState(null);
 
-  const handleInputChange = (e) => {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosInstance.get("/company/updateprofile");
+        const companyData = response.data;
+
+        setFormData({
+          profilePicture: companyData.profilePicture || "",
+          coverPhoto: companyData.coverPhoto || "",
+          description: companyData.description || ""
+        });
+      } catch (error) {
+        console.error("Error fetching profile data", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
-  const handleFileChange = (e) => {
-    const { name, files } = e.target;
-    if (name === "profilePhoto") setProfilePhoto(files[0]);
-    else if (name === "coverPhoto") setCoverPhoto(files[0]);
+  const handleFileChange = (e, field) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prevData) => ({
+          ...prevData,
+          [field]: reader.result, // Set as Base64 string
+        }));
+      };
+      reader.readAsDataURL(file); // Convert file to Base64
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formDataToSend = new FormData();
-    formDataToSend.append("description", formData.description);
-    if (profilePhoto) formDataToSend.append("profilePhoto", profilePhoto);
-    if (coverPhoto) formDataToSend.append("coverPhoto", coverPhoto);
 
     try {
-      const response = await axiosInstance.put(
-        "/company/updateprofile",
-        formDataToSend,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-      if (response.data.success) {
-        toast.success("Company details updated successfully!");
-      } else {
-        toast.error(
-          response.data.message || "Failed to update company details."
-        );
-      }
+      await axiosInstance.put("/company/updateprofile", formData);
+      console.log(formData);
+      toast.success("Profile updated successfully!");
+      //navigate(/explore/${companyData.username}); // Navigate back to profile page after successful update
     } catch (error) {
-      toast.error("An error occurred. Please try again.");
+      console.error("Error updating profile", error.message);
+      toast.error("Error updating profile");
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="max-w-4xl mx-auto p-4">
       <ToastContainer />
-      <div className="w-full max-w-lg p-8 bg-white shadow-lg rounded-lg">
-        <h2 className="text-2xl font-bold text-center text-blue-600 mb-6">
-          Update Company Details
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-gray-700 font-semibold">
-              Description
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              className="w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows="4"
+      <h2 className="text-2xl font-semibold text-center">Update Profile</h2>
+      <form onSubmit={handleSubmit} className="mt-8 space-y-8">
+        {/* Description Field */}
+        <div className="border p-4 rounded-lg bg-gray-50 shadow">
+          <label className="block text-gray-700">Bio</label>
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            className="w-full p-2 border border-gray-300 rounded"
+            required
+          />
+        </div>
+
+        {/* Profile Picture Upload */}
+        <div className="border p-4 rounded-lg bg-gray-50 shadow">
+          <label className="block text-gray-700">Profile Picture</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => handleFileChange(e, "profilePicture")}
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+          {formData.profilePicture && (
+            <img
+              src={formData.profilePicture}
+              alt="Profile Preview"
+              className="mt-2 w-32 h-32 object-cover rounded-full"
             />
-          </div>
-          <div>
-            <label className="block text-gray-700 font-semibold">
-              Profile Photo
-            </label>
-            <input
-              type="file"
-              name="profilePhoto"
-              onChange={handleFileChange}
-              accept="image/*"
-              className="w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          )}
+        </div>
+
+        {/* Cover Photo Upload */}
+        <div className="border p-4 rounded-lg bg-gray-50 shadow">
+          <label className="block text-gray-700">Cover Photo</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => handleFileChange(e, "coverPhoto")}
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+          {formData.coverPhoto && (
+            <img
+              src={formData.coverPhoto}
+              alt="Cover Preview"
+              className="mt-2 w-full h-48 object-cover rounded"
             />
-          </div>
-          <div>
-            <label className="block text-gray-700 font-semibold">
-              Cover Photo
-            </label>
-            <input
-              type="file"
-              name="coverPhoto"
-              onChange={handleFileChange}
-              accept="image/*"
-              className="w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          )}
+        </div>
+
+        {/* Submit Button */}
+        <div className="text-center">
           <button
             type="submit"
-            className="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="bg-green-500 text-white py-2 px-6 rounded-lg mt-4"
           >
-            Update Details
+            Save Changes
           </button>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   );
 };

@@ -2,6 +2,7 @@ import companyModel from "../models/companyModel.js";
 import validator from "validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { v2 as cloudinary } from "cloudinary";
 
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET_KEY, { expiresIn: "3d" });
@@ -107,32 +108,34 @@ const updateProfile = async (req, res) => {
       }
     }
 
+    if (req.body.profilePicture) {
+      const uploadResult = await cloudinary.uploader.upload(
+        req.body.profilePicture
+      );
+      if (uploadResult) {
+        updatedDetails.profilePicture = uploadResult.secure_url;
+      }
+    }
 
-    // Not tested this part.
-    // H-A-R-I-O-M check this with frontend
-    
-    // if (req.body.profilePicture) {
-    //   const uploadResult = await uploadOnCloudinary(req.body.profilePicture);
-    //   if (uploadResult) {
-    //     updatedDetails.profilePicture = uploadResult.secure_url;
-    //   }
-    // }
-
-    // if (req.body.coverPhoto) {
-    //   const uploadResult = await uploadOnCloudinary(req.body.coverPhoto);
-    //   if (uploadResult) {
-    //     updatedDetails.coverPhoto = uploadResult.secure_url;
-    //   }
-    // }
-
+    if (req.body.coverPhoto) {
+      const uploadResult = await cloudinary.uploader.upload(
+        req.body.coverPhoto
+      );
+      if (uploadResult) {
+        updatedDetails.coverPhoto = uploadResult.secure_url;
+      }
+    }
     const company = await companyModel
       .findByIdAndUpdate(req.company._id, { $set: updatedDetails }, { new: true })
       .select("-password");
-
-    res.json(company);
+    res.json({ success: true, company });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    console.error("Error in updateProfile:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error updating profile",
+      error: error.message,
+    });
   }
 };
 

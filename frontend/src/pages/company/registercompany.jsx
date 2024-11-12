@@ -1,16 +1,17 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "../../../config/axios.js";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const CompanyRegistration = () => {
   const [formData, setFormData] = useState({
-    companyName: "",
+    name: "",
     email: "",
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,8 +19,8 @@ const CompanyRegistration = () => {
   };
 
   const validateForm = () => {
-    const { companyName, email, password } = formData;
-    if (!companyName || !email || !password) {
+    const { name, email, password } = formData;
+    if (!name || !email || !password) {
       toast.error("Please fill in all required fields.");
       return false;
     }
@@ -30,17 +31,16 @@ const CompanyRegistration = () => {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const response = await axiosInstance.post(
-          "/company/signup",
-          formData
-        );
+        const response = await axiosInstance.post("/company/signup", formData);
         if (response.data.success) {
           toast.success("Company registered successfully!");
-          setFormData({ companyName: "", email: "", password: "" });
+          setFormData({ name: "", email: "", password: "" });
+          navigate("/company/showjobs");
         } else {
           toast.error(response.data.message || "Failed to register company.");
         }
       } catch (error) {
+        console.log(error.message);
         toast.error("An error occurred. Please try again.");
       }
     }
@@ -62,8 +62,8 @@ const CompanyRegistration = () => {
             </label>
             <input
               type="text"
-              name="companyName"
-              value={formData.companyName}
+              name="name"
+              value={formData.name}
               onChange={handleChange}
               className="w-full px-4 py-2 mt-1 text-gray-900 bg-gray-100 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
