@@ -13,7 +13,7 @@ const ConnectionCard = () => {
       setError("");
       try {
         const response = await axiosInstance.get("/connections/requests");
-        console.log(response);
+        // console.log(response);
         setRequests(response.data);
       } catch (error) {
         setError("Error fetching connection requests.");

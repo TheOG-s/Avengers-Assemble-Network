@@ -84,6 +84,10 @@ const App = () => {
           element={user ? <Home /> : <Navigate to="/login" replace />}
         />
         <Route
+          path="/"
+          element={user ? <Home /> : <Navigate to="/login" replace />}
+        />
+        <Route
           path="/messages"
           element={user ? <Messages /> : <Navigate to="/login" replace />}
         />
@@ -97,7 +101,7 @@ const App = () => {
           element={user ? <Jobs /> : <Navigate to="/login" replace />}
         />
         <Route
-          path="/updateprofile/:username"
+          path="/updateprofile"
           element={user ? <UpdateProfile /> : <Navigate to="/login" replace />}
         />
         <Route
