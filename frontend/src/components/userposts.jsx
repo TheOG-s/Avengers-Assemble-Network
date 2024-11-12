@@ -21,7 +21,7 @@ const UsersPost = ({ username }) => {
         if (response.data.success) {
           setPosts(response.data.posts);
         } else {
-          toast.error("Failed to load posts.");
+          // toast.error("Failed to load posts.");
         }
       } catch (error) {
         // toast.error("Error fetching posts. Please try again.");
