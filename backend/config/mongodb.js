@@ -5,7 +5,8 @@ const connectdb = async () => {
     console.log("DB Connected");
   });
   await mongoose.connect(
-    `${process.env.MONGODB_URI}/Avengers-Assemble-Network`
+    `${process.env.MONGODB_URI}/Avengers-Assemble-Network`,
+    { serverSelectionTimeoutMS: 5000 }
   );
 };
 

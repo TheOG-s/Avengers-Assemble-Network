@@ -10,11 +10,13 @@ import companyRouter from "./routes/companyRoute.js";
 import cookieParser from "cookie-parser";
 import exploreRouter from "./routes/exploreRoute.js";
 import connectionRouter from "./routes/connectionRoute.js";
-
+import { populateTries } from "./config/populateTrie.js";
+import searchRouter from "./routes/searchRoute.js";
 // App config
 const app = express();
 const port = process.env.PORT || 8000;
 connectdb();
+populateTries();
 // connectCloudinary();
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
@@ -35,7 +37,7 @@ app.use("/api/job", jobRouter);
 app.use("/api/company", companyRouter);
 app.use("/api/posts", postRouter);
 app.use("/api/connections", connectionRouter);
-
+app.use("/api", searchRouter);
 app.get("/", (req, res) => {
   res.send("Backend Running.");
 });
