@@ -36,7 +36,7 @@ const MobileMenu = ({ handleLogout }) => {
             <FaHome className="mr-2" /> Home
           </NavLink>
         )}
-        
+
         {user && (
           <>
             <NavLink
@@ -50,6 +50,13 @@ const MobileMenu = ({ handleLogout }) => {
               className="flex items-center px-4 py-2 text-gray-600 hover:text-blue-500"
             >
               <FaBriefcase className="mr-2" /> Jobs
+            </NavLink>
+            <NavLink
+              to="/jobsapplied"
+              className="block px-4 py-2 text-gray-600 hover:text-blue-500"
+              onClick={() => setDropdownOpen(false)}
+            >
+              <FaClipboardList className="inline mr-1" /> Jobs Applied
             </NavLink>
             <NavLink
               to={`/explore/${user.username}`}

@@ -5,7 +5,7 @@ import { v2 as cloudinary } from "cloudinary";
 //get feed possts
 export const getFeedPosts = async (req, res) => {
   try {
-    console.log(req.user);
+    //console.log(req.user);
     const posts = await postModel
       .find({ user: { $in: req.user } })
       .populate("user", "name username profilePicture bio")

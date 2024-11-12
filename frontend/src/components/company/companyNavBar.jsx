@@ -47,7 +47,7 @@ const Navbar = () => {
     <nav className="shadow-lg bg-white">
       <div className="container mx-auto flex items-center justify-between p-4">
         {/* Logo Section */}
-        <Link to="/" className="flex items-center">
+        <Link to="/company/profile" className="flex items-center">
           <img src={logo} alt="Company Logo" className="w-25 h-12 " />
           <span className="text-xl font-semibold text-gray-800"></span>
         </Link>
