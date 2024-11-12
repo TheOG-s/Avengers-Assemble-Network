@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import axiosInstance from "../../config/axios.js"; // Ensure this imports your configured Axios instance
 import { FaCheck, FaTimes } from "react-icons/fa";
 
@@ -13,7 +14,6 @@ const ConnectionCard = () => {
       setError("");
       try {
         const response = await axiosInstance.get("/connections/requests");
-        // console.log(response);
         setRequests(response.data);
       } catch (error) {
         setError("Error fetching connection requests.");
@@ -30,9 +30,7 @@ const ConnectionCard = () => {
     setLoading(true);
     setError("");
     try {
-      // Accept the connection request
       await axiosInstance.put(`/connections/accept/${requestId}`);
-      // Remove accepted request from state
       setRequests((prevRequests) =>
         prevRequests.filter((req) => req._id !== requestId)
       );
@@ -48,9 +46,7 @@ const ConnectionCard = () => {
     setLoading(true);
     setError("");
     try {
-      // Reject the connection request
       await axiosInstance.put(`/connections/reject/${requestId}`);
-      // Remove rejected request from state
       setRequests((prevRequests) =>
         prevRequests.filter((req) => req._id !== requestId)
       );
@@ -75,9 +71,10 @@ const ConnectionCard = () => {
             className="bg-gray-100 p-4 mb-4 rounded-lg shadow-md"
           >
             <div className="flex items-center justify-between">
-              {/* Profile Info */}
-              <div className="flex items-start space-x-4">
-                {/* Profile Image */}
+              <Link
+                to={`/explore/${request.sender.username}`}
+                className="flex items-start space-x-4"
+              >
                 <img
                   src={
                     request.sender.profilePicture ||
@@ -86,24 +83,20 @@ const ConnectionCard = () => {
                   alt={request.name}
                   className="w-12 h-12 rounded-full"
                 />
-                {/* Name, Bio, and Info */}
                 <div>
-                  <p className="font-semibold text-gray-800">{request.name}</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="font-semibold text-gray-800">
                     {request.sender.name || "No title available"}
                   </p>
                   <p className="text-sm text-gray-700 mt-1">
                     {request.message || ""}
                   </p>
-                  {/* Bio */}
                   {request.sender.bio && (
                     <p className="text-gray-600 text-sm mt-2">
                       {request.sender.bio}
                     </p>
                   )}
                 </div>
-              </div>
-              {/* Action Icons */}
+              </Link>
               <div className="flex space-x-2">
                 <button
                   onClick={() => handleReject(request._id)}
@@ -116,7 +109,7 @@ const ConnectionCard = () => {
                   onClick={() => handleAccept(request._id)}
                   className="text-blue-500 hover:text-blue-700"
                   title="Accept"
-                  disabled={loading} // Disable button while loading
+                  disabled={loading}
                 >
                   {loading ? (
                     <span>Loading...</span>

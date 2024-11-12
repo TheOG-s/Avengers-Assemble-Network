@@ -7,6 +7,7 @@ import { v2 as cloudinary } from "cloudinary";
 export const getFeedPosts = async (req, res) => {
   const { page = 1, limit = 0 } = req.query; // Default to page 1 and limit 10
   try {
+    //console.log(req.user);
     const posts = await postModel
       .find({ user: { $ne: null } }) // Filter to exclude posts with null users
       .populate("user", "name username profilePicture bio") // Only populate necessary fields
