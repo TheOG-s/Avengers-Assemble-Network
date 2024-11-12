@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../../config/axios.js";
 import { useParams } from "react-router-dom";
 import { FaMapMarkerAlt, FaBuilding } from "react-icons/fa";
-
+import {  toast } from "react-toastify";
 const JobDetailsPage = () => {
   const { jobId } = useParams();
   const [job, setJob] = useState(null);
@@ -29,9 +29,9 @@ const JobDetailsPage = () => {
       .post(`/job/apply/${jobId}`)
       .then((response) => {
         if (response.data.success) {
-          alert("Application submitted successfully!");
+          toast.success("Application submitted successfully!");
         } else {
-          alert("Failed to submit application.");
+          toast.error("Failed to submit application.");
         }
       })
       .catch((error) => {
