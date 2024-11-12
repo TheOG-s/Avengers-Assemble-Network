@@ -3,20 +3,31 @@ import userModel from "../models/userModel.js";
 import { uploadOnCloudinary } from "../config/cloudinary.js";
 import { v2 as cloudinary } from "cloudinary";
 //get feed possts
-export const getFeedPosts = async (req, res) => {
-  try {
-    console.log(req.user);
-    const posts = await postModel
-      .find({ user: { $in: req.user } })
-      .populate("user", "name username profilePicture bio")
-      .populate("comments.user", "name profilePicture")
-      // .select("content image likes comments")
-      .sort({ createdAt: -1 });
 
-    res.status(200).json(posts);
+export const getFeedPosts = async (req, res) => {
+  const { page = 1, limit = 30 } = req.query; // Default to page 1 and limit 10
+  try {
+    //console.log(req.user);
+    const posts = await postModel
+      .find({ user: { $ne: null } }) // Filter to exclude posts with null users
+      .populate("user", "name username profilePicture bio") // Only populate necessary fields
+      .populate("comments.user", "name profilePicture") // Populate comments with selected fields
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit) // Skip for pagination
+      .limit(Number(limit)); // Limit the number of posts per page
+
+    const totalPosts = await postModel.countDocuments({ user: { $ne: null } });
+    const totalPages = Math.ceil(totalPosts / limit); // Calculate total pages
+
+    res.status(200).json({
+      posts,
+      totalPages,
+      currentPage: Number(page),
+      totalPosts,
+    });
   } catch (error) {
-    //console.log("error in getfeedposts controller: ", error);
-    res.status(500).json({ message: "server error" });
+    console.error("Error in getFeedPosts controller:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -26,13 +37,13 @@ export const createPost = async (req, res) => {
     const content = req.body.content;
     //console.log(req.file);
     const image = req.file;
-    //console.log(image);
     let newPost;
     let imagePublicId = null;
     //console.log(image);
     if (image) {
       const result = await uploadOnCloudinary(image.path);
       imagePublicId = result?.public_id || null;
+      //console.log("url", result.secure_url);
       newPost = await postModel.create({
         user: req.user._id,
         content,

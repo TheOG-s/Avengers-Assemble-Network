@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import axiosInstance from "../../config/axios.js";
 import UsersPost from "../components/userposts.jsx";
 
@@ -12,9 +13,11 @@ const formatDate = (date) => {
 };
 
 const ProfilePage = () => {
+  const { user: loggedInUser } = useSelector((state) => state.auth);
   const [user, setUser] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [connectionStatus, setConnectionStatus] = useState(null);
   const navigate = useNavigate();
 
   const { username } = useParams();
@@ -27,6 +30,9 @@ const ProfilePage = () => {
         const response = await axiosInstance.get(`/explore/${username}`);
         if (response.status === 200) {
           setUser(response.data);
+          if (loggedInUser) {
+            fetchConnectionStatus(response.data._id);
+          }
         }
       } catch (error) {
         if (error.response && error.response.status === 404) {
@@ -34,14 +40,94 @@ const ProfilePage = () => {
         } else {
           setError("Error fetching user profile.");
         }
-        // console.error("Error fetching user profile:", error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchUser();
-  }, [username]);
+  }, [username, loggedInUser]);
+
+  const fetchConnectionStatus = async (userId) => {
+    try {
+      const response = await axiosInstance.get(`/connections/status/${userId}`);
+      setConnectionStatus(response.data);
+    } catch (error) {
+      console.error("Error fetching connection status:", error);
+    }
+  };
+
+  const handleConnect = async () => {
+    try {
+      await axiosInstance.post(`/connections/request/${user._id}`);
+      fetchConnectionStatus(user._id); // Refresh connection status after connect
+    } catch (error) {
+      console.error("Error sending connection request:", error);
+    }
+  };
+
+  const handleRemoveConnection = async () => {
+    try {
+      await axiosInstance.delete(`/connections/${user._id}`);
+      fetchConnectionStatus(user._id);
+    } catch (error) {
+      console.error("Error removing connection:", error);
+    }
+  };
+
+  const renderConnectionButton = () => {
+    if (!connectionStatus) return null;
+
+    switch (connectionStatus.val) {
+      case 0:
+        return (
+          <button
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg ml-4"
+            onClick={() => navigate("/updateprofile")}
+          >
+            Edit Profile
+          </button>
+        );
+      case 1:
+        return (
+          <button
+            className="px-4 py-2 bg-red-500 text-white rounded-lg ml-4"
+            onClick={handleRemoveConnection}
+          >
+            Remove Connection
+          </button>
+        );
+      case 2:
+        return (
+          <button
+            className="px-4 py-2 bg-gray-500 text-white rounded-lg ml-4"
+            disabled
+          >
+            Pending
+          </button>
+        );
+      case 3:
+        return (
+          <button
+            className="px-4 py-2 bg-yellow-500 text-white rounded-lg ml-4"
+            onClick={() => navigate("/connections")}
+          >
+            Pending
+          </button>
+        );
+      case 4:
+        return (
+          <button
+            className="px-4 py-2 bg-green-500 text-white rounded-lg ml-4"
+            onClick={handleConnect}
+          >
+            Connect
+          </button>
+        );
+      default:
+        return null;
+    }
+  };
 
   if (loading) {
     return <div className="text-center">Loading...</div>;
@@ -70,9 +156,14 @@ const ProfilePage = () => {
       </div>
 
       {/* User Info */}
-      <div className="mt-16 text-center">
-        <h2 className="text-2xl font-semibold">{user.name}</h2>
-        <p className="text-gray-600 mt-2">{user.bio || "No bio available"}</p>
+      <div className="mt-16 text-center flex justify-center items-center">
+        <div>
+          <h2 className="text-2xl font-semibold">{user.name}</h2>
+          <p className="text-gray-600 mt-2">{user.bio || "No bio available"}</p>
+        </div>
+        <div className="ml-4">
+          {loggedInUser && renderConnectionButton()}
+        </div>
       </div>
 
       {/* Skills */}
@@ -170,6 +261,7 @@ const ProfilePage = () => {
           <UsersPost username={username} />
         </>
       )}
+
     </div>
   );
 };

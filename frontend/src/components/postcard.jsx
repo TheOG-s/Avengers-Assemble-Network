@@ -86,7 +86,6 @@ const PostCard = ({
       setNewComment("");
       setComments((prev) => prev + 1);
     } catch (error) {
-      toast.error("Error adding comment");
     } finally {
       setLoading(false);
     }

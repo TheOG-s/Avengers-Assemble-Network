@@ -1,4 +1,4 @@
-import { connections } from "mongoose";
+import mongoose from "mongoose";
 import connectionRequestModel from "../models/connectionRequestModel.js";
 import userModel from "../models/userModel.js";
 
@@ -174,12 +174,24 @@ const getConnectionStatus = async (req, res) => {
     const userId = req.user._id;
     const requestId = req.params.userId;
 
-    const isConnected = req.user.connections.includes(requestId);
+    // console.log(userId)
+    // console.log(requestId)
+
+    if(userId.toString() === requestId.toString()) {
+      return res.json({
+        success: true,
+        message: "Self",
+        val: 0,
+      });
+    }
+
+    const isConnected = req.user.connections.some(conn => conn.toString() === new mongoose.Types.ObjectId(requestId).toString());
 
     if (isConnected) {
       return res.json({
         success: true,
         message: "Connected.",
+        val: 1,
       });
     }
 
@@ -193,17 +205,18 @@ const getConnectionStatus = async (req, res) => {
 
     if (pendingRequest) {
       if (pendingRequest.sender.toString() === userId.toString()) {
-        return res.json({ success: true, message: "Pending at their end." });
+        return res.json({ success: true, message: "Pending at their end.", val: 2});
       } else {
         return res.json({
           success: true,
           message: "Pending at your end.",
+          val: 3,
           requestId: pendingRequest._id,
         });
       }
     }
 
-    return res.json({ success: true, message: "Not connected." });
+    return res.json({ success: true, message: "Not connected.", val: 4});
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
@@ -230,7 +243,7 @@ const removeConnection = async (req, res) => {
     const userId = req.user._id;
     const removeId = req.params.userId;
 
-    const isConnected = req.user.connections.includes(removeId);
+    const isConnected = req.user.connections.some(conn => conn.toString() === new mongoose.Types.ObjectId(removeId).toString());
 
     if (!isConnected) {
       return res.json({

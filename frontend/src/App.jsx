@@ -32,15 +32,16 @@ import SearchBar from "./components/searchbar";
 
 // Page Not Found
 import NotFound from "./pages/notFound"; // You can create a simple 404 component
+import JobsApplied from "./pages/jobsapplied";
 
 const App = () => {
   const location = useLocation();
   const { user } = useSelector((state) => state.auth); // Get user from Redux state
 
   // Check if the user is an authenticated company user
-  const isCompanyRoute = location.pathname.includes("/company");
+ 
   const isUserCompany = user?.role === "user"; // Assuming role is set in user object
-
+ const isCompanyRoute = location.pathname.startsWith("/company");
   const companyRoutes = [
     "/company/home",
     "/company/showjobs",
@@ -56,11 +57,7 @@ const App = () => {
     <>
       {/* Display appropriate NavBar based on route */}
 
-      {companyRoutes.includes(location.pathname) ? (
-        <CompanyNavbar />
-      ) : (
-        <NavBar />
-      )}
+      {isCompanyRoute ? <CompanyNavbar /> : <NavBar />}
 
       <Routes>
         {/* Public Routes (Available to all users) */}
@@ -84,6 +81,10 @@ const App = () => {
           element={user ? <Home /> : <Navigate to="/login" replace />}
         />
         <Route
+          path="/"
+          element={user ? <Home /> : <Navigate to="/login" replace />}
+        />
+        <Route
           path="/messages"
           element={user ? <Messages /> : <Navigate to="/login" replace />}
         />
@@ -97,8 +98,12 @@ const App = () => {
           element={user ? <Jobs /> : <Navigate to="/login" replace />}
         />
         <Route
-          path="/updateprofile/:username"
+          path="/updateprofile"
           element={user ? <UpdateProfile /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/jobsapplied"
+          element={user ? <JobsApplied /> : <Navigate to="/login" replace />}
         />
         <Route
           path="/search"
