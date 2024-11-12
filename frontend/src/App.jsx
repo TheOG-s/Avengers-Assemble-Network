@@ -28,6 +28,7 @@ import CompanyRegistration from "./pages/company/registercompany";
 import UpdateCompanyDetails from "./pages/company/updateprofile";
 import CompanyProfile from "./pages/company/profile";
 import CompanyJobDetailsPage from "./pages/company/JobDetails";
+import SearchBar from "./components/searchbar";
 
 // Page Not Found
 import NotFound from "./pages/notFound"; // You can create a simple 404 component
@@ -54,6 +55,7 @@ const App = () => {
   return (
     <>
       {/* Display appropriate NavBar based on route */}
+
       {companyRoutes.includes(location.pathname) ? (
         <CompanyNavbar />
       ) : (
@@ -77,15 +79,43 @@ const App = () => {
 
         {/* Protected Routes */}
         {/* Redirect unauthenticated users to login */}
-        <Route path="/home" element={user ? <Home /> : <Navigate to="/login" replace />} />
-        <Route path="/messages" element={user ? <Messages /> : <Navigate to="/login" replace />} />
-        <Route path="/notifications" element={user ? <Notifications /> : <Navigate to="/login" replace />} />
-        
-        <Route path="/jobs" element={user ? <Jobs /> : <Navigate to="/login" replace />} />
-        <Route path="/updateprofile/:username" element={user ? <UpdateProfile /> : <Navigate to="/login" replace />} />
-        <Route path="/connections" element={user ? <Connections /> : <Navigate to="/login" replace />} />
-        <Route path="/showjob/:jobId" element={user ? <JobDetailsPage /> : <Navigate to="/login" replace />} />
-        <Route path="/createpost" element={user ? <CreatePostPage /> : <Navigate to="/login" replace />} />
+        <Route
+          path="/home"
+          element={user ? <Home /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/messages"
+          element={user ? <Messages /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/notifications"
+          element={user ? <Notifications /> : <Navigate to="/login" replace />}
+        />
+
+        <Route
+          path="/jobs"
+          element={user ? <Jobs /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/updateprofile/:username"
+          element={user ? <UpdateProfile /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/search"
+          element={user ? <SearchBar /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/connections"
+          element={user ? <Connections /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/showjob/:jobId"
+          element={user ? <JobDetailsPage /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/createpost"
+          element={user ? <CreatePostPage /> : <Navigate to="/login" replace />}
+        />
 
         {/* Restrict company routes based on user role */}
         {user?.role !== "user" ? (
@@ -95,7 +125,10 @@ const App = () => {
             <Route path="/company/postjob" element={<CompanyPostJob />} />
             <Route path="/company/login" element={<CompanyLogin />} />
             <Route path="/company/signup" element={<CompanyRegistration />} />
-            <Route path="/company/updateprofile" element={<UpdateCompanyDetails />} />
+            <Route
+              path="/company/updateprofile"
+              element={<UpdateCompanyDetails />}
+            />
             <Route path="/company/profile" element={<CompanyProfile />} />
             <Route path="/company/:jobId" element={<CompanyJobDetailsPage />} />
           </>
