@@ -56,11 +56,7 @@ const App = () => {
     <>
       {/* Display appropriate NavBar based on route */}
 
-      {companyRoutes.includes(location.pathname) ? (
-        <CompanyNavbar />
-      ) : (
-        <NavBar />
-      )}
+      {isCompanyRoute ? <CompanyNavbar /> : <NavBar />}
 
       <Routes>
         {/* Public Routes (Available to all users) */}
@@ -97,7 +93,7 @@ const App = () => {
           element={user ? <Jobs /> : <Navigate to="/login" replace />}
         />
         <Route
-          path="/updateprofile/:username"
+          path="/updateprofile"
           element={user ? <UpdateProfile /> : <Navigate to="/login" replace />}
         />
         <Route
